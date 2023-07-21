@@ -1,45 +1,46 @@
 package com.app.library.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "books")
 public class Book {
     @Id
-    @Column(name = "bo_id")
+    @Column(name = "bo_id", nullable = false)
     private int bo_id;
 
-    @Column(name = "bo_title")
+    @Column(name = "bo_title", nullable = false)
     private String bo_title;
 
-    @Column(name = "bo_publish_year")
+    @Column(name = "bo_publishedYear", nullable = false)
     private int bo_publishedYear;
 
-    @Column(name = "bo_quantity")
+    @Column(name = "bo_quantity", nullable = false)
     private int bo_quantity;
 
     @Column(name = "bo_description")
     private String bo_description;
 
-    @Column(name = "bo_image")
+    @Column(name = "bo_image_link")
     private String bo_image_link;
 
-    @Column(name = "bo_create_date")
+    @Column(name = "bo_created_date", nullable = false)
     private Date bo_created_date;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ca_id")
     private Category category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pu_id")
     private Publisher publisher;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "book_author", joinColumns = @JoinColumn(name = "bo_id", referencedColumnName = "bo_id"), inverseJoinColumns = @JoinColumn(name = "au_id", referencedColumnName = "au_id"))
+    private List<Author> authors;
 
     public Book() {
     }

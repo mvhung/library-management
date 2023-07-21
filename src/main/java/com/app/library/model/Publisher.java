@@ -1,6 +1,9 @@
 package com.app.library.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "publishers")
@@ -10,10 +13,10 @@ public class Publisher {
 	@Column(name = "pu_id")
 	private int pu_id;
 
-	@Column(name = "pu_name")
+	@Column(name = "pu_name", nullable = false, length = 45)
 	private String pu_name;
 
-	@Column(name = "pu_introduce")
+	@Column(name = "pu_introduce", nullable = false)
 	private String pu_introduce;
 
 	@Column(name = "pu_website")
@@ -21,6 +24,8 @@ public class Publisher {
 
 	@Column(name = "pu_image")
 	private String pu_image_link;
+
+
 
 	public Publisher() {
 

@@ -1,11 +1,6 @@
 package com.app.library.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.Date;
 
@@ -17,17 +12,17 @@ public class Loan {
     @Column(name = "lo_id")
     private int lo_id;
 
-    @Column(name = "lo_no_of_date")
+    @Column(name = "lo_no_of_date", nullable = false)
     private int lo_no_of_date;
 
-    @Column(name = "lo_create_date")
+    @Column(name = "lo_create_date", nullable = false)
     private Date lo_create_date;
 
     @ManyToOne
     @JoinColumn(name = "us_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bo_id")
     private Book book;
 

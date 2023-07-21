@@ -1,12 +1,15 @@
 package com.app.library.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "categories")
 public class Category {
     @Id
-    @Column(name = "ca_id")
+    @Column(name = "ca_id", nullable = false, insertable = false)
     private int ca_id;
 
     @Column(name = "ca_name")
