@@ -1,12 +1,13 @@
 package com.app.library.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.app.library.model.role.RoleName;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
-
+@Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "users")
 public class User {
@@ -15,32 +16,36 @@ public class User {
     @Column(name = "us_id")
     private int userID;
 
-    @Column(name = "us_name")
+    @Column(name = "us_name", nullable = false, length = 45)
     private String username;
 
-    @Column(name="us_password")
+    @Column(name = "us_password", nullable = false)
     private String password;
-    @Column(name="us_fullname")
-    private String fullname;
-    @Column(name="us_address")
+    @Column(name = "us_fullname", nullable = false)
+    private String fullName;
+    @Column(name = "us_address", nullable = false)
     private String address;
-    @Column(name="us_create_date")
+    @Column(name = "us_create_date")
     private Date createDate;
-    @Column(name="us_update_password")
+    @Column(name = "us_update_password")
     private int updatePassword;
-    @Column(name="us_mobile")
+    @Column(name = "us_mobile", nullable = false, length = 15)
     private String mobile;
-    @Column(name="us_status")
-    private int status;
-    @Column(name="us_group")
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "us_status", nullable = false)
+
+    private RoleName status;
+    @Column(name = "us_group")
     private int group;
-    @Column(name="us_email")
+    @Column(name = "us_email", nullable = false)
     private String email;
 
-    public User( String username, String password, String fullname, String address, Date createDate, int updatePassword, String mobile, int status, int group, String email) {
+    public User(String username, String password, String fullName, String address, Date createDate, int updatePassword,
+            String mobile, RoleName status, int group, String email) {
         this.username = username;
         this.password = password;
-        this.fullname = fullname;
+        this.fullName = fullName;
         this.address = address;
         this.createDate = createDate;
         this.updatePassword = updatePassword;
@@ -78,12 +83,12 @@ public class User {
         this.password = password;
     }
 
-    public String getFullname() {
-        return fullname;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getAddress() {
@@ -118,11 +123,11 @@ public class User {
         this.mobile = mobile;
     }
 
-    public int getStatus() {
+    public RoleName getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(RoleName status) {
         this.status = status;
     }
 
@@ -148,7 +153,7 @@ public class User {
                 "userID=" + userID +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", fullname='" + fullname + '\'' +
+                ", fullName='" + fullName + '\'' +
                 ", address='" + address + '\'' +
                 ", createDate=" + createDate +
                 ", updatePassword=" + updatePassword +
