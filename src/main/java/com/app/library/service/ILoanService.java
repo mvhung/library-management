@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.app.library.model.Loan;
 import com.app.library.model.User;
 
 public interface ILoanService {
