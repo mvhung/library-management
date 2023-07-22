@@ -31,7 +31,7 @@ public class Publisher {
 
 	}
 
-	public Publisher(int publisherID, String publisherName, String publisherIntroduce, String publisherWebsiteURL,
+	public Publisher(int publisherID, String publisherName, String publisherIntroduce, String publisherWebsiteUrl,
 			String publisherImageUrl) {
 		super();
 		this.publisherID = publisherID;

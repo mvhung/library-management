@@ -14,22 +14,23 @@ import java.util.Optional;
 public class IUserService implements com.app.library.service.IUserService {
     @Autowired
     private UserRepository userRepository;
+
     @Override
     public void signUp(User user) {
         userRepository.save(user);
     }
 
-    public ResponseEntity<User> addUser(User user){
+    public ResponseEntity<User> addUser(User user) {
         String newEmail = user.getEmail();
         Optional<User> userEmailExisted = userRepository.findByEmail(newEmail);
-        if(!userEmailExisted.isPresent()) {
-            return new ResponseEntity<>(userRepository.save(user),HttpStatus.OK);
+        if (!userEmailExisted.isPresent()) {
+            return new ResponseEntity<>(userRepository.save(user), HttpStatus.OK);
         }
-        return new ResponseEntity<>(new User(),HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(new User(), HttpStatus.NOT_IMPLEMENTED);
     }
 
     @Override
-    public User updateUser(int Id,User userUpdate) {
+    public User updateUser(int Id, User userUpdate) {
         User user = userRepository.findById(Id).orElse(new User());
         user.setFullName(userUpdate.getFullName());
         user.setAddress(userUpdate.getAddress());
@@ -51,11 +52,10 @@ public class IUserService implements com.app.library.service.IUserService {
     }
 
     @Override
-    public ResponseEntity<User>getUser(int Id) {
-        User user = userRepository.findById(Id).orElseThrow(()-> new RuntimeException("can find user id:" + Id));
+    public ResponseEntity<User> getUser(int Id) {
+        User user = userRepository.findById(Id).orElseThrow(() -> new RuntimeException("can find user id:" + Id));
 
-    return new ResponseEntity<>(user,HttpStatus.OK);
-
+        return new ResponseEntity<>(user, HttpStatus.OK);
 
     }
 
