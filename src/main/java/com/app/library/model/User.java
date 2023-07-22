@@ -2,10 +2,11 @@ package com.app.library.model;
 
 import com.app.library.model.role.RoleName;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
-
+@Data
 @EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "users")
@@ -18,16 +19,15 @@ public class User {
     @Column(name = "us_name", nullable = false, length = 45)
     private String username;
 
-
     @Column(name = "us_password", nullable = false)
     private String password;
     @Column(name = "us_fullname", nullable = false)
     private String fullName;
     @Column(name = "us_address", nullable = false)
     private String address;
-    @Column(name="us_create_date")
+    @Column(name = "us_create_date")
     private Date createDate;
-    @Column(name="us_update_password")
+    @Column(name = "us_update_password")
     private int updatePassword;
     @Column(name = "us_mobile", nullable = false, length = 15)
     private String mobile;
@@ -36,13 +36,13 @@ public class User {
     @Column(name = "us_status", nullable = false)
 
     private RoleName status;
-    @Column(name="us_group")
+    @Column(name = "us_group")
     private int group;
     @Column(name = "us_email", nullable = false)
     private String email;
 
-
-    public User( String username, String password, String fullName, String address, Date createDate, int updatePassword, String mobile, RoleName status, int group, String email) {
+    public User(String username, String password, String fullName, String address, Date createDate, int updatePassword,
+            String mobile, RoleName status, int group, String email) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
@@ -146,7 +146,6 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
-
 
     @Override
     public String toString() {
