@@ -34,7 +34,7 @@ public class Book {
     @Column(name = "bo_image_link")
     private String bookImageLink;
 
-    @Column(name = "bo_created_date", nullable = false)
+    @Column(name = "bo_created_date")
     private Date bookCreatedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,7 +52,7 @@ public class Book {
 
 
     public Book(String bookTitle, int bookPublishedYear, int bookQuantity, String bookDescription, String bookImageLink,
-            Date bookCreatedDate) {
+                Date bookCreatedDate) {
         this.bookTitle = bookTitle;
         this.bookPublishedYear = bookPublishedYear;
         this.bookQuantity = bookQuantity;

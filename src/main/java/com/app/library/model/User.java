@@ -6,7 +6,9 @@ import lombok.*;
 
 import java.util.Date;
 @Data
-
+@Setter
+@Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Entity
@@ -43,126 +45,5 @@ public class User {
     @Column(name = "us_email", nullable = false)
     private String email;
 
-    public User(String username, String password, String fullName, String address, Date createDate, int updatePassword,
-            String mobile, RoleName status, int group, String email) {
-        this.username = username;
-        this.password = password;
-        this.fullName = fullName;
-        this.address = address;
-        this.createDate = createDate;
-        this.updatePassword = updatePassword;
-        this.mobile = mobile;
-        this.status = status;
-        this.group = group;
-        this.email = email;
-    }
 
-    public User() {
-
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserID(int userId) {
-        this.userId = userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public int getUpdatePassword() {
-        return updatePassword;
-    }
-
-    public void setUpdatePassword(int updatePassword) {
-        this.updatePassword = updatePassword;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public RoleName getStatus() {
-        return status;
-    }
-
-    public void setStatus(RoleName status) {
-        this.status = status;
-    }
-
-    public int getGroup() {
-        return group;
-    }
-
-    public void setGroup(int group) {
-        this.group = group;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userID=" + userId +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", address='" + address + '\'' +
-                ", createDate=" + createDate +
-                ", updatePassword=" + updatePassword +
-                ", mobile='" + mobile + '\'' +
-                ", status=" + status +
-                ", group=" + group +
-                ", email='" + email + '\'' +
-                '}';
-    }
 }

@@ -7,7 +7,8 @@ import com.app.library.model.Book;
 
 public interface IBookService {
     public ResponseEntity<?> getBook(int id);
-    public ResponseEntity<?> getAllBooks(int page, int size) ;
+    public ResponseEntity<?> getAllBooks() ;
+
     public ResponseEntity<?> addBook(BookDto dto);
     public ResponseEntity<?> updateBook(int id, BookDto dto);
     ResponseEntity<?> deleteBook(int id);

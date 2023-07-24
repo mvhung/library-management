@@ -1,5 +1,6 @@
 package com.app.library.controller;
 
+import com.app.library.dto.UserDto;
 import com.app.library.model.User;
 import com.app.library.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,20 +15,18 @@ public class UserController {
     @Autowired
     UserServiceImpl userService;
     @RequestMapping("{id}")
-    public ResponseEntity<User> getUserById(@PathVariable("id") int id){
+    public ResponseEntity<?> getUserById(@PathVariable("id") int id){
 
         return userService.getUser(id);
     }
 
     @RequestMapping(value = "signup",method = RequestMethod.POST)
-    public ResponseEntity<User> signUp(@RequestBody User user){
-        return userService.addUser(user);
+    public ResponseEntity<?> signUp(@RequestBody UserDto user){
+        return userService.signUp(user);
     }
 
     @RequestMapping(value = "update/{id}",method = RequestMethod.POST)
-    public ResponseEntity<User> signUp(@PathVariable int id,@RequestBody User user){
-        User newUser = userService.updateUser(id, user);
-        ResponseEntity<User> ok = new ResponseEntity<>(newUser, HttpStatus.OK);
-        return ok;
+    public ResponseEntity<?> signUp(@PathVariable int id,@RequestBody UserDto user){
+        return userService.updateUser(id, user);
     }
 }

@@ -1,5 +1,6 @@
 package com.app.library.exception.category;
 
+import com.app.library.exception.category.user.UserException;
 import com.app.library.model.Category;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,5 +18,10 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     public final ResponseEntity<Object> handleCategoryException(CategoryException ex, WebRequest request) {
         CategoryExceptionResponse exceptionResponse = new CategoryExceptionResponse(ex.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserException.class)
+    public final ResponseEntity<?> handleUserException(UserException ex, WebRequest request){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("500",ex.getMessage(),null));
     }
 }
