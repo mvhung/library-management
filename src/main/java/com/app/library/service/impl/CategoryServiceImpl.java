@@ -13,18 +13,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class CategoryService implements ICategoryService {
+public class CategoryServiceImpl implements ICategoryService {
 //    save thong tin cua entity duoc truyen vao
-    public Category save(Category entity) {
-        return categoryRepository.save(entity);
+    public Category save(Category category) {
+        return categoryRepository.save(category);
     }
 
     @Autowired
     private CategoryRepository categoryRepository;
-    @Autowired
-    private MapValidationErrorService mapValidationErrorService;
 
     @Override
     public ResponseEntity<?> getAllCategories() {
@@ -95,6 +94,25 @@ public class CategoryService implements ICategoryService {
         }
 
     }
+    @Override
+    public ResponseEntity<?> searchCategory(String keyword) {
+        try {
+            ResponseEntity<List<Category>> categoriesResponse = (ResponseEntity<List<Category>>) getAllCategories();
+            List<Category> categories = categoriesResponse.getBody();
+            //            List<Category> categories = categoryRepository.findAll();
+            List<Category> results =  categories.stream()
+                    .filter(category -> category.getCategoryName().toLowerCase().contains(keyword.toLowerCase()))
+                    .collect(Collectors.toList());
+            if (results.size() == 0) {
+                return new ResponseEntity<>("No result for " + keyword ,HttpStatus.OK);
+            }
+            return new ResponseEntity<List<Category>>(results, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new CategoryException("Can't find category ");
+        }
+    }
+
+
     public Category findById(int id) {
 
         Optional<Category> found = categoryRepository.findById(id);

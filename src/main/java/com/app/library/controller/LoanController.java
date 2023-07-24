@@ -1,7 +1,7 @@
 package com.app.library.controller;
 
 import com.app.library.model.User;
-import com.app.library.service.impl.ILoanService;
+import com.app.library.service.impl.IoanServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ import java.util.List;
 public class LoanController {
 
     @Autowired
-    ILoanService loanService;
+    IoanServiceImpl loanService;
     @RequestMapping("{id}")
     public ResponseEntity<List<User>> getUserBorrowingById(@PathVariable("id") int id){
 

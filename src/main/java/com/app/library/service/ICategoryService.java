@@ -10,4 +10,6 @@ public interface ICategoryService {
     ResponseEntity<?> createCategory(CategoryDto dto) ;
     ResponseEntity<?> updateCategory(int id, CategoryDto dto);
     ResponseEntity<?> deleteCategory(int id);
+    ResponseEntity<?> searchCategory(String keyword);
+
 }
