@@ -11,6 +11,8 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 public class UserDto implements Serializable {
+    String userId;
+    String password;
     String username;
     String fullName;
     String address;

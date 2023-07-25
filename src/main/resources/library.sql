@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `authors` (
   `au_id` int(11) NOT NULL,
-  `au_name` varchar(100) DEFAULT NULL,
+  `au_fullname` varchar(100) DEFAULT NULL,
   `au_introduce` text DEFAULT NULL,
   `au_image` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
