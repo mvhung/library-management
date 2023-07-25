@@ -1,8 +1,7 @@
 package com.app.library.service.impl;
 
 import com.app.library.dto.UserDto;
-import com.app.library.exception.category.CategoryException;
-import com.app.library.exception.category.user.UserException;
+import com.app.library.exception.object.ObjectException;
 import com.app.library.model.User;
 import com.app.library.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
@@ -37,7 +36,7 @@ public class UserServiceImpl implements com.app.library.service.IUserService {
             return userRepository.save(user);
         }
         else{
-            throw new UserException("user is existed");
+            throw new ObjectException("user is existed");
         }
     }
 
@@ -57,7 +56,7 @@ public class UserServiceImpl implements com.app.library.service.IUserService {
     public User updateUserInfor(int id,User userUpdate){
         Optional<User> userExisted = userRepository.findById(id);
         if(userExisted.isEmpty()) {
-            throw new UserException("Category id " + id + " does't exist");
+            throw new ObjectException("User id " + id + " does't exist");
         }
         try {
             User user = userExisted.get();
@@ -73,7 +72,7 @@ public class UserServiceImpl implements com.app.library.service.IUserService {
             user.setUpdatePassword(userUpdate.getUpdatePassword());
             return userRepository.save(user);
         }catch (Exception e){
-            throw new UserException("can't update user id:" + id);
+            throw new ObjectException("can't update user id:" + id);
         }
     }
 

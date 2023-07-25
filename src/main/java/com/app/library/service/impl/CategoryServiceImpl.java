@@ -1,7 +1,7 @@
 package com.app.library.service.impl;
 
 import com.app.library.dto.CategoryDto;
-import com.app.library.exception.category.CategoryException;
+import com.app.library.exception.object.ObjectException;
 import com.app.library.model.Category;
 import com.app.library.repository.CategoryRepository;
 import com.app.library.service.ICategoryService;
@@ -37,7 +37,7 @@ public class CategoryServiceImpl implements ICategoryService {
             Category category = categoryRepository.findById(id).orElseThrow();
             return new ResponseEntity<>(category, HttpStatus.OK);
         } catch (Exception e) {
-            throw new CategoryException("No get detail category" );
+            throw new ObjectException("No get detail category" );
         }
     }
     @Override
@@ -70,7 +70,7 @@ public class CategoryServiceImpl implements ICategoryService {
 
         Optional<Category> existed = categoryRepository.findById(id);
         if(existed.isEmpty()) {
-            throw new CategoryException("Category id " + id + " does't exist");
+            throw new ObjectException("Category id " + id + " does't exist");
         }
 
         try {
@@ -80,7 +80,7 @@ public class CategoryServiceImpl implements ICategoryService {
 
             return categoryRepository.save(existedCategory);
         } catch (Exception e) {
-            throw new CategoryException("Category is updated failed ");
+            throw new ObjectException("Category is updated failed ");
         }
     }
     @Override
@@ -90,7 +90,7 @@ public class CategoryServiceImpl implements ICategoryService {
             categoryRepository.delete(existed);
             return new ResponseEntity<>("Category with Id " +id+" was deleted", HttpStatus.OK);
         } catch (Exception e) {
-            throw new CategoryException("deleted category failed ");
+            throw new ObjectException("deleted category failed ");
         }
 
     }
@@ -101,14 +101,15 @@ public class CategoryServiceImpl implements ICategoryService {
             List<Category> categories = categoriesResponse.getBody();
             //            List<Category> categories = categoryRepository.findAll();
             List<Category> results =  categories.stream()
-                    .filter(category -> category.getCategoryName().toLowerCase().contains(keyword.toLowerCase()))
+                    .filter(category -> category.getCategoryName().toLowerCase().contains(keyword.toLowerCase()) ||
+                            category.getCategoryDescription().toLowerCase().contains(keyword.toLowerCase()))
                     .collect(Collectors.toList());
             if (results.size() == 0) {
                 return new ResponseEntity<>("No result for " + keyword ,HttpStatus.OK);
             }
             return new ResponseEntity<List<Category>>(results, HttpStatus.OK);
         } catch (Exception e) {
-            throw new CategoryException("Can't find category ");
+            throw new ObjectException("Can't find category ");
         }
     }
 
@@ -117,7 +118,7 @@ public class CategoryServiceImpl implements ICategoryService {
 
         Optional<Category> found = categoryRepository.findById(id);
         if(found.isEmpty()) {
-            throw new CategoryException("Category with id " + id + " doesn't exist");
+            throw new ObjectException("Category with id " + id + " doesn't exist");
         }
 
         return found.get();
