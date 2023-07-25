@@ -1,7 +1,11 @@
 package com.app.library.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Collection;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -18,6 +22,10 @@ public class Category {
 
     @Column(name = "ca_description")
     private String categoryDescription;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Book> books;
 
 
 

@@ -14,6 +14,6 @@ public interface IBookService {
     public ResponseEntity<?> addBook(BookDto dto);
     public ResponseEntity<?> updateBook(int id, BookDto dto);
     ResponseEntity<?> deleteBook(int id);
-    ResponseEntity<?> searchBook(String keyword);
+    ResponseEntity<?> searchBook(String title, int publishYear, String category);
 
 }

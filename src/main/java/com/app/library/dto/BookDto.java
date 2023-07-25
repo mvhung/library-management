@@ -1,10 +1,15 @@
 package com.app.library.dto;
 
+import com.app.library.model.Author;
 import com.app.library.model.Book;
-import jakarta.validation.constraints.NotBlank;
+import com.app.library.model.Category;
+import com.app.library.model.Publisher;
+
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * DTO for {@link Book}
@@ -18,4 +23,9 @@ public class BookDto implements Serializable {
     int bookQuantity;
     String bookDescription;
     String bookImageLink;
+    List<Author> authors;
+    Category category;
+    Publisher publisher;
+
+
 }

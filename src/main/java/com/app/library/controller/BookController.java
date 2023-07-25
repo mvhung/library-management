@@ -45,8 +45,11 @@ public class BookController {
         return new ResponseEntity<>(bookPage, HttpStatus.OK);
     }
     @GetMapping("/search")
-    public ResponseEntity<?> searchBook(@RequestParam("keyword") String keyword) {
-        return bookServiceImpl.searchBook(keyword);
+    public ResponseEntity<?> searchBook(
+            @RequestParam(name = "title", required = false) String title,
+            @RequestParam(name = "publishYear", required = false) Integer publishYear,
+            @RequestParam(name = "category", required = false) String category) {
+        return bookServiceImpl.searchBook(title,publishYear,category);
     }
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateCategory(
