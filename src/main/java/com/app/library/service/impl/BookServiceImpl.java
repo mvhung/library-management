@@ -1,4 +1,5 @@
 package com.app.library.service.impl;
+import com.app.library.dto.AuthorDto;
 import com.app.library.dto.BookDto;
 import com.app.library.dto.CategoryDto;
 import com.app.library.exception.object.ObjectException;
@@ -6,6 +7,7 @@ import com.app.library.model.Category;
 import com.app.library.repository.CategoryRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
@@ -54,39 +56,34 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
             Optional<Book> existingBook = bookRepository.findByBookTitle(dto.getBookTitle());
 
             if (existingBook.isPresent()) {
-                // Nếu sách đã tồn tại, chỉ cập nhật thông tin
+                // Nếu sách đã tồn tại, chỉ cập nhật quantity
                 Book bookToUpdate = existingBook.get();
+
                 bookToUpdate.setBookQuantity(bookToUpdate.getBookQuantity() + dto.getBookQuantity());
-                BeanUtils.copyProperties(dto, bookToUpdate);
-                bookRepository.save(bookToUpdate);
+                // Cập nhật thông tin category, publisher và authors từ dto
+                bookToUpdate.setCategory(dto.getCategory());
+                bookToUpdate.setPublisher(dto.getPublisher());
+                bookToUpdate.setAuthors(dto.getAuthors());
+                BeanUtils.copyProperties(bookToUpdate,dto);
+                bookToUpdate = save(bookToUpdate); // Lưu cập nhật vào cơ sở dữ liệu
                 dto.setBookId(bookToUpdate.getBookId());
-            } else {
-                // Nếu sách chưa tồn tại, kiểm tra danh mục trước
-                Category category = dto.getCategory();
-                Optional<Category> existingCategory = categoryRepository.findByCategoryName(category.getCategoryName());
-
-                if (!existingCategory.isPresent()) {
-                    // Nếu danh mục không tồn tại, tạo mới và lưu vào cơ sở dữ liệu
-                    categoryRepository.save(category);
-                } else {
-                    // Nếu danh mục đã tồn tại, gán lại đối tượng danh mục đã lưu vào sách
-                    dto.setCategory(existingCategory.get());
-                }
-
-                // Tạo mới sách và lưu vào cơ sở dữ liệu
-                Book newBook = new Book();
-                BeanUtils.copyProperties(dto, newBook);
-                newBook = save(newBook);
-                dto.setBookId(newBook.getBookId());
+                return new ResponseEntity<>(dto, HttpStatus.CREATED);
             }
+            // Tạo mới sách và lưu vào cơ sở dữ liệu
+            Book newBook = new Book();
+            BeanUtils.copyProperties(dto, newBook);
+            newBook = save(newBook);
+            dto.setBookId(newBook.getBookId());
 
             return new ResponseEntity<>(dto, HttpStatus.CREATED);
         } catch (Exception e) {
             // Log thông tin lỗi
             e.printStackTrace();
-            throw new ObjectException("Book is created failed ");
+            throw new ObjectException("Book creation failed ");
         }
     }
+
+
 
     @Override
     public ResponseEntity<?> updateBook(int id, BookDto dto) {
@@ -115,6 +112,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
             existedBook.setBookQuantity(book.getBookQuantity());
             existedBook.setAuthors(book.getAuthors());
             existedBook.setPublisher(book.getPublisher());
+            existedBook.setCategory(book.getCategory());
 
             return bookRepository.save(existedBook);
         } catch (Exception e) {

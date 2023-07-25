@@ -5,6 +5,7 @@ import com.app.library.model.Book;
 import com.app.library.model.Category;
 import com.app.library.model.Publisher;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import java.io.Serializable;
@@ -24,6 +25,7 @@ public class BookDto implements Serializable {
     String bookDescription;
     String bookImageLink;
     List<Author> authors;
+
     Category category;
     Publisher publisher;
 

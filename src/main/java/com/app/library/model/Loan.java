@@ -23,11 +23,11 @@ public class Loan {
     @Column(name = "lo_create_date", nullable = false)
     private Date loanCreateDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "us_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "bo_id")
     private Book book;
 
