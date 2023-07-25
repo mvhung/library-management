@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class IUserService implements com.app.library.service.IUserService {
+public class UserServiceImpl implements com.app.library.service.IUserService {
     @Autowired
     private UserRepository userRepository;
 

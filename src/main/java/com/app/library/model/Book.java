@@ -50,7 +50,7 @@ public class Book {
     private List<Author> authors;
 
     public Book(String bookTitle, int bookPublishedYear, int bookQuantity, String bookDescription, String bookImageLink,
-            Date bookCreatedDate) {
+                Date bookCreatedDate) {
         this.bookTitle = bookTitle;
         this.bookPublishedYear = bookPublishedYear;
         this.bookQuantity = bookQuantity;

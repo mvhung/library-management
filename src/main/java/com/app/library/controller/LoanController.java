@@ -1,18 +1,18 @@
 package com.app.library.controller;
 
 import com.app.library.model.*;
-import com.app.library.service.impl.ILoanService;
+import com.app.library.service.impl.IoanServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "api/v1")
+@RequestMapping(path = "api/v1/loans")
 public class LoanController {
 
     @Autowired
-    ILoanService loanService;
+    IoanServiceImpl loanService;
 
     @GetMapping("{id}")
     public ResponseEntity<Loan> getLoanById(@PathVariable("id") int id) {

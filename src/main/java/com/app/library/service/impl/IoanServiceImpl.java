@@ -10,7 +10,7 @@ import com.app.library.repository.LoanRepository;
 
 
 @Service
-public class ILoanService implements com.app.library.service.ILoanService {
+public class IoanServiceImpl implements com.app.library.service.ILoanService {
     @Autowired
     private LoanRepository loanRepository;
 
