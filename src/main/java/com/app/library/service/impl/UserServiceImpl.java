@@ -49,7 +49,7 @@ public class UserServiceImpl implements com.app.library.service.IUserService {
 
         updateUserInfor(id, user);
 
-        user.setUserID(id);
+        user.setUserId(Integer.parseInt(userUpdate.getUserId()));
         return new ResponseEntity<>(user, HttpStatus.CREATED);
 
     }
