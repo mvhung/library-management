@@ -1,5 +1,9 @@
-package com.app.library.exception.category;
+package com.app.library.exception;
 
+import com.app.library.exception.book.BookException;
+import com.app.library.exception.book.BookExceptionResponse;
+import com.app.library.exception.category.CategoryException;
+import com.app.library.exception.category.CategoryExceptionResponse;
 import com.app.library.model.Category;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +20,11 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 //    chua thong tin anh xa message voi noi dung exception
     public final ResponseEntity<Object> handleCategoryException(CategoryException ex, WebRequest request) {
         CategoryExceptionResponse exceptionResponse = new CategoryExceptionResponse(ex.getMessage());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(BookException.class)
+    public final ResponseEntity<Object> handleBookException(BookException ex, WebRequest request) {
+        BookExceptionResponse exceptionResponse = new BookExceptionResponse(ex.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 }

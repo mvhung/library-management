@@ -1,7 +1,5 @@
 package com.app.library.service.impl;
 import com.app.library.dto.BookDto;
-import com.app.library.model.Category;
-import com.app.library.repository.CategoryRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,13 +15,12 @@ import com.app.library.repository.BookRepository;
 import org.springframework.util.MultiValueMap;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookServiceImpl implements com.app.library.service.IBookService {
     @Autowired
     private BookRepository bookRepository;
-    @Autowired
-    private CategoryRepository categoryRepository;
 
     public Book save(Book book) {
         return bookRepository.save(book);
@@ -49,13 +46,24 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
 
     @Override
     public ResponseEntity<?> addBook(BookDto dto) {
+        Optional<Book> existingBook = bookRepository.findByBookTitle(dto.getBookTitle());
 
-        Book book = new Book();
-        BeanUtils.copyProperties(dto, book);
-        book = save(book);
+        if (existingBook.isPresent()) {
+            // Nếu book đã tồn tại, tăng quantity lên  và lưu lại vào cơ sở dữ liệu
+            Book bookToUpdate = existingBook.get();
+            bookToUpdate.setBookQuantity(bookToUpdate.getBookQuantity() + dto.getBookQuantity());
 
-        dto.setBookId(book.getBookId());
-        return new ResponseEntity<>( dto, HttpStatus.CREATED);
+            BeanUtils.copyProperties(bookToUpdate,dto);
+            bookRepository.save(bookToUpdate);
+            dto.setBookId(bookToUpdate.getBookId());
+            return new ResponseEntity<>(dto,HttpStatus.OK);
+        }
+        // Nếu book chưa tồn tại, thêm mới vào cơ sở dữ liệu
+        Book newBook = new Book();
+        BeanUtils.copyProperties(dto,newBook);
+        newBook = save(newBook);
+        dto.setBookId(newBook.getBookId());
+        return new ResponseEntity<>(dto,HttpStatus.OK);
     }
 
     @Override
