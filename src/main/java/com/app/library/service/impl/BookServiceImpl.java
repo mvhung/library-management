@@ -56,13 +56,13 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
             BeanUtils.copyProperties(bookToUpdate,dto);
             bookRepository.save(bookToUpdate);
             dto.setBookId(bookToUpdate.getBookId());
-            return new ResponseEntity<>(dto,HttpStatus.OK);
         }
         // Nếu book chưa tồn tại, thêm mới vào cơ sở dữ liệu
         Book newBook = new Book();
         BeanUtils.copyProperties(dto,newBook);
         newBook = save(newBook);
         dto.setBookId(newBook.getBookId());
+
         return new ResponseEntity<>(dto,HttpStatus.OK);
     }
 
