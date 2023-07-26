@@ -1,0 +1,256 @@
+/* -------------------------------------------- */
+/* ############### 4.15 News - Event ############### */
+/* -------------------------------------------- */
+
+.News - Event-results__option {
+  border-radius: 2px;
+  margin-bottom: 1px;
+  font-size: $font-size-sm;
+}
+
+.News - Event-container--default {
+
+  .News - Event-selection--single {
+    background-color: #fff;
+    border-color: $input-border-color;
+    border-radius: $border-radius;
+    height: $input-height;
+    outline: none;
+
+    .News - Event-selection__rendered {
+      color: $input-color;
+      line-height: $input-height - .1rem;
+      padding-left: $input-btn-padding-x;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .News - Event-selection__placeholder {
+      color: $input-placeholder-color;
+    }
+
+    .News - Event-selection__arrow {
+      width: 30px;
+      height: $input-height;
+      line-height: $input-height;
+
+      b { margin-top: -3px; }
+    }
+  }
+
+  .News - Event-selection--multiple {
+    background-color: $input-bg;
+    border-color: $input-border-color;
+    border-radius: $border-radius;
+    min-height: $input-height;
+    outline: none;
+
+    .News - Event-selection__rendered {
+      padding: 0 4px;
+    }
+
+    .News - Event-selection__choice {
+      position: relative;
+      margin-top: 5px;
+      margin-right: 4px;
+      padding: 3px 10px 3px 20px;
+      border-color: transparent;
+      border-radius: 2px;
+      background-color: theme-color('primary');
+      color: #fff;
+      line-height: 1.45;
+    }
+
+    .News - Event-selection__choice__remove {
+      color: #fff;
+      opacity: .5;
+      font-size: 12px;
+      display: inline-block;
+      position: absolute;
+      top: 4px;
+      left: 7px;
+    }
+  }
+
+  &.News - Event-container--focus .News - Event-selection--multiple {
+    border-color: $input-border-color;
+  }
+
+  .News - Event-search--dropdown .News - Event-search__field {
+    border-color: $input-border-color;
+    border-radius: $border-radius;
+  }
+
+  .News - Event-results__option[aria-selected="true"] {
+    background-color: lighten($body-bg, 5%);
+  }
+
+  .News - Event-results__option--highlighted[aria-selected] {
+    background-color: theme-color('primary');
+  }
+
+  .News - Event-results > .News - Event-results__options {
+    margin: 4px;
+  }
+
+  .News - Event-search--inline .News - Event-search__field {
+    margin-top: 5px;
+    line-height: 26px;
+    padding-left: 7px;
+  }
+
+  &.News - Event-container--disabled {
+    .News - Event-selection__choice {
+      padding-left: 10px;
+      background-color: $gray-500;
+
+      .News - Event-selection__choice__remove { display: none; }
+    }
+
+  }
+}
+
+.News - Event-container--open {
+
+  .News - Event-selection--single,
+  .News - Event-selection--multiple {
+    background-color: #fff;
+    border-color: $input-border-color;
+  }
+
+  .News - Event-dropdown--above {
+    @include border-top-radius($border-radius);
+  }
+
+  .News - Event-dropdown--below {
+    @include border-bottom-radius($border-radius);
+    top: 0; //$input-height - 1.15;
+  }
+}
+
+.News - Event-dropdown {
+  border-color: $input-border-color;
+  z-index: 200;
+}
+
+.News - Event-search--dropdown {
+  padding-bottom: 0;
+}
+
+
+// Alert State
+.has-success .News - Event-container--default .News - Event-selection--single { border-color: theme-color('success'); }
+.has-warning .News - Event-container--default .News - Event-selection--single { border-color: theme-color('warning'); }
+.has-danger .News - Event-container--default .News - Event-selection--single { border-color: theme-color('danger'); }
+
+
+// Size
+.News - Event-xs + .News - Event-container { font-size: 12px; }
+.News - Event-dropdown-xs .News - Event-results__option {  font-size: 12px; }
+
+.News - Event-sm + .News - Event-container { font-size: 14px; }
+.News - Event-dropdown-sm .News - Event-results__option {  font-size: 14px; }
+
+// Border
+.News - Event-bd-0 + .News - Event-container--default .News - Event-selection--single { border-width: 0; }
+.bg-gray + .News - Event-container--default .News - Event-selection--single {
+  background-color: lighten($gray-800, 5%);
+  .News - Event-selection__rendered { color: $gray-300; }
+}
+
+
+/* #################### SELECT 2 Activity #################### */
+
+.News - Event-selection {
+  // Default skin in dark
+  &.News - Event-for-dark {
+    border-color: rgba($gray-800, 0.1);
+  }
+
+  // Outline skin in light
+  &.News - Event-outline-primary { @include News - Event-outline-color(theme-color('primary')); }
+  &.News - Event-outline-success { @include News - Event-outline-color(theme-color('success')); }
+  &.News - Event-outline-warning { @include News - Event-outline-color(theme-color('warning')); }
+  &.News - Event-outline-danger  { @include News - Event-outline-color(theme-color('danger')); }
+  &.News - Event-outline-info    { @include News - Event-outline-color(theme-color('info')); }
+  &.News - Event-outline-teal    { @include News - Event-outline-color($teal); }
+  &.News - Event-outline-indigo  { @include News - Event-outline-color($indigo); }
+  &.News - Event-outline-purple  { @include News - Event-outline-color($purple); }
+  &.News - Event-outline-pink    { @include News - Event-outline-color($pink); }
+  &.News - Event-outline-orange  { @include News - Event-outline-color($orange); }
+  &.News - Event-outline-white   { @include News - Event-outline-color(rgba(#fff,.5)); }
+
+  // Full Colored Select Box
+  &.News - Event-full-color {
+    border-color: transparent;
+    .News - Event-selection__placeholder { color: rgba(#fff, 0.6); }
+    .News - Event-selection__rendered { color: #fff; }
+    .News - Event-selection__arrow b { border-top-color: rgba(#fff, 0.6); }
+  }
+
+  &.News - Event-primary { background-color: theme-color('primary'); }
+  &.News - Event-success { background-color: theme-color('success'); }
+  &.News - Event-warning { background-color: theme-color('warning'); }
+  &.News - Event-danger { background-color: theme-color('danger'); }
+  &.News - Event-info { background-color: theme-color('info'); }
+  &.News - Event-indigo { background-color: $indigo; }
+  &.News - Event-purple { background-color: $purple; }
+  &.News - Event-pink { background-color: $pink; }
+  &.News - Event-teal { background-color: $teal; }
+  &.News - Event-orange { background-color: $orange; }
+  &.News - Event-dark { background-color: $gray-800; }
+
+}
+
+// Arrow color for outline
+.News - Event-container--default.News - Event-container--open {
+  .News - Event-outline-primary { .News - Event-selection__arrow b { border-bottom-color: theme-color('primary'); }}
+  .News - Event-outline-success { .News - Event-selection__arrow b { border-bottom-color: theme-color('success'); }}
+  .News - Event-outline-warning { .News - Event-selection__arrow b { border-bottom-color: theme-color('warning'); }}
+  .News - Event-outline-danger  { .News - Event-selection__arrow b { border-bottom-color: theme-color('danger'); }}
+  .News - Event-outline-info    { .News - Event-selection__arrow b { border-bottom-color: theme-color('info'); }}
+  .News - Event-outline-indigo  { .News - Event-selection__arrow b { border-bottom-color: $indigo; }}
+  .News - Event-outline-purple  { .News - Event-selection__arrow b { border-bottom-color: $purple; }}
+  .News - Event-outline-pink    { .News - Event-selection__arrow b { border-bottom-color: $pink; }}
+  .News - Event-outline-teal    { .News - Event-selection__arrow b { border-bottom-color: $teal; }}
+  .News - Event-outline-orange  { .News - Event-selection__arrow b { border-bottom-color: $orange; }}
+  .News - Event-outline-white   { .News - Event-selection__arrow b { border-bottom-color: rgba(#fff,.5); }}
+
+  .News - Event-full-color {
+    .News - Event-selection__arrow b { border-bottom-color: rgba(#fff, 0.6); }
+  }
+}
+
+// Selected Hover Color Variant
+.hover-success .News - Event-results__option--highlighted[aria-selected] { background-color: theme-color('success'); }
+.hover-warning .News - Event-results__option--highlighted[aria-selected] { background-color: theme-color('warning'); }
+.hover-danger .News - Event-results__option--highlighted[aria-selected] { background-color: theme-color('danger'); }
+.hover-info .News - Event-results__option--highlighted[aria-selected] { background-color: theme-color('info'); }
+.hover-indigo .News - Event-results__option--highlighted[aria-selected] { background-color: $indigo; }
+.hover-purple .News - Event-results__option--highlighted[aria-selected] { background-color: $purple; }
+.hover-orange .News - Event-results__option--highlighted[aria-selected] { background-color: $orange; }
+.hover-pink .News - Event-results__option--highlighted[aria-selected] { background-color: $pink; }
+.hover-teal .News - Event-results__option--highlighted[aria-selected] { background-color: $teal; }
+.hover-dark .News - Event-results__option--highlighted[aria-selected] { background-color: $gray-800; }
+
+
+// Full colored dropdown variant
+.News - Event-drop-color {
+  border-color: transparent;
+  .News - Event-results__option { color: rgba(#fff, 0.6); }
+  .News - Event-results__option--highlighted[aria-selected] { background-color: rgba(#000, 0.2); }
+  .News - Event-results__option[aria-selected="true"] { background-color: rgba(#000, 0.08); }
+}
+
+.News - Event-drop-primary { background-color: theme-color('primary'); }
+.News - Event-drop-success { background-color: theme-color('success'); }
+.News - Event-drop-warning { background-color: theme-color('warning'); }
+.News - Event-drop-danger { background-color: theme-color('danger'); }
+.News - Event-drop-info { background-color: theme-color('info'); }
+.News - Event-drop-indigo { background-color: $indigo; }
+.News - Event-drop-purple { background-color: $purple; }
+.News - Event-drop-pink { background-color: $pink; }
+.News - Event-drop-teal { background-color: $teal; }
+.News - Event-drop-orange { background-color: $orange; }
+.News - Event-drop-dark { background-color: $gray-800; }
