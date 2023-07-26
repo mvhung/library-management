@@ -101,8 +101,7 @@ public class CategoryServiceImpl implements ICategoryService {
             List<Category> categories = categoriesResponse.getBody();
             //            List<Category> categories = categoryRepository.findAll();
             List<Category> results =  categories.stream()
-                    .filter(category -> category.getCategoryName().toLowerCase().contains(keyword.toLowerCase()) ||
-                            category.getCategoryDescription().toLowerCase().contains(keyword.toLowerCase()))
+                    .filter(category -> category.getCategoryName().toLowerCase().contains(keyword.toLowerCase()))
                     .collect(Collectors.toList());
             if (results.size() == 0) {
                 return new ResponseEntity<>("No result for " + keyword ,HttpStatus.OK);

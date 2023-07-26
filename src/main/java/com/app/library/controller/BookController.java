@@ -25,7 +25,8 @@ public class BookController {
     @Autowired
     MapValidationErrorService mapValidationErrorService;
     @RequestMapping("{id}")
-    public ResponseEntity<?> getBookById(@PathVariable("id") int id){
+    public ResponseEntity<?> getBookById(@PathVariable(name="id") int id ){
+
         return bookServiceImpl.getBook(id);
     }
     @PostMapping
@@ -44,16 +45,14 @@ public class BookController {
         Page<Book> bookPage =  bookServiceImpl.findAll(pageable);
         return new ResponseEntity<>(bookPage, HttpStatus.OK);
     }
+
     @GetMapping("/search")
-    public ResponseEntity<?> searchBook(
-            @RequestParam(name = "title", required = false) String title,
-            @RequestParam(name = "publishYear", required = false) Integer publishYear,
-            @RequestParam(name = "category", required = false) String category) {
-        return bookServiceImpl.searchBook(title,publishYear,category);
+    public ResponseEntity<?> searchCategory(@RequestParam("keyword") String keyword) {
+        return bookServiceImpl.searchBook(keyword);
     }
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateCategory(
-            @Valid @PathVariable("id") int id,
+            @Valid @PathVariable(name="id") int id,
             @RequestBody BookDto dto , BindingResult result) {
 
         ResponseEntity<?> responseEntity =  mapValidationErrorService.mapValidationFields(result);
@@ -63,7 +62,7 @@ public class BookController {
         return bookServiceImpl.updateBook(id,dto);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteBook(@PathVariable("id") int id) {
+    public ResponseEntity<?> deleteBook(@PathVariable(name="id") int id) {
         return bookServiceImpl.deleteBook(id);
     }
 
