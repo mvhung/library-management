@@ -25,8 +25,13 @@ public class UserController {
         return userService.signUp(user);
     }
 
-    @RequestMapping(value = "update/{id}",method = RequestMethod.POST)
+    @RequestMapping(value = "update/{id}",method = RequestMethod.PUT)
     public ResponseEntity<?> signUp(@PathVariable int id,@RequestBody UserDto user){
         return userService.updateUser(id, user);
+    }
+
+    @RequestMapping(value = "delete/{id}",method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteUser(@PathVariable int id){
+        return userService.deleteUser(id);
     }
 }
