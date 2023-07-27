@@ -1,4 +1,4 @@
-package com.app.library.exception.category;
+package com.app.library.exception.object;
 
 import lombok.Data;
 

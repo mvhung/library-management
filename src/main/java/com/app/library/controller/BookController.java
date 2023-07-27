@@ -1,7 +1,6 @@
 package com.app.library.controller;
 
 import com.app.library.dto.BookDto;
-import com.app.library.dto.CategoryDto;
 import com.app.library.service.impl.MapValidationErrorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,8 @@ public class BookController {
     @Autowired
     MapValidationErrorService mapValidationErrorService;
     @RequestMapping("{id}")
-    public ResponseEntity<?> getBookById(@PathVariable("id") int id){
+    public ResponseEntity<?> getBookById(@PathVariable(name="id") int id ){
+
         return bookServiceImpl.getBook(id);
     }
     @PostMapping
@@ -46,6 +46,25 @@ public class BookController {
         return new ResponseEntity<>(bookPage, HttpStatus.OK);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> searchCategory(@RequestParam("keyword") String keyword) {
+        return bookServiceImpl.searchBook(keyword);
+    }
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateCategory(
+            @Valid @PathVariable(name="id") int id,
+            @RequestBody BookDto dto , BindingResult result) {
+
+        ResponseEntity<?> responseEntity =  mapValidationErrorService.mapValidationFields(result);
+        if(responseEntity != null) {
+            return responseEntity;
+        }
+        return bookServiceImpl.updateBook(id,dto);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteBook(@PathVariable(name="id") int id) {
+        return bookServiceImpl.deleteBook(id);
+    }
 
 
 }

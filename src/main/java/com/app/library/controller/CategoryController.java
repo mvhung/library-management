@@ -31,7 +31,7 @@ public class CategoryController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> getCategory(@RequestParam("keyword") String keyword) {
+    public ResponseEntity<?> searchCategory(@RequestParam("keyword") String keyword) {
         return categoryServiceImpl.searchCategory(keyword);
     }
     @GetMapping("/{id}")
@@ -41,8 +41,13 @@ public class CategoryController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateCategory(
-            @PathVariable("id") int id,
-            @RequestBody CategoryDto dto) {
+            @Valid  @PathVariable("id") int id,
+            @RequestBody CategoryDto dto,
+            BindingResult result) {
+        ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationFields(result);
+        if(responseEntity != null) {
+            return responseEntity;
+        }
         return categoryServiceImpl.updateCategory(id,dto);
     }
     @DeleteMapping("/{id}")

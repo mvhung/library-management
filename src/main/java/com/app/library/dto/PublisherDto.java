@@ -1,15 +1,16 @@
 package com.app.library.dto;
 
-import lombok.*;
+import com.app.library.model.Publisher;
+import lombok.Value;
 
 import java.io.Serializable;
 
 /**
- * DTO for {@link com.app.library.model.Publisher}
+ * DTO for {@link Publisher}
  */
-@Data
-@AllArgsConstructor
+@Value
 public class PublisherDto implements Serializable {
+    int publisherId;
     String publisherName;
     String publisherIntroduce;
     String publisherWebsiteUrl;

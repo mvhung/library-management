@@ -3,7 +3,7 @@ package com.app.library.model;
 import jakarta.persistence.*;
 
 import lombok.*;
-
+import java.util.*;
 @Data
 
 @AllArgsConstructor
@@ -24,5 +24,8 @@ public class Author {
 
     @Column(name = "au_image")
     private String authorImageUrl;
+
+    @ManyToMany(mappedBy = "authors")
+    private List<Book> books;
 
 }

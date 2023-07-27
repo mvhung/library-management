@@ -5,9 +5,11 @@ import org.springframework.http.ResponseEntity;
 
 import com.app.library.model.Book;
 
+import java.util.List;
+
 public interface IBookService {
     public ResponseEntity<?> getBook(int id);
-    public ResponseEntity<?> getAllBooks() ;
+    public List<Book> getAllBooks() ;
 
     public ResponseEntity<?> addBook(BookDto dto);
     public ResponseEntity<?> updateBook(int id, BookDto dto);
