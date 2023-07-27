@@ -10,6 +10,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 public class AuthorDto implements Serializable {
+    int authorId;
     String authorFullName;
     String authorIntroduce;
     String authorImageUrl;

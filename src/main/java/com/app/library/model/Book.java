@@ -31,21 +31,21 @@ public class Book {
     @Column(name = "bo_description")
     private String bookDescription;
 
-    @Column(name = "bo_image_link")
+    @Column(name = "bo_image")
     private String bookImageLink;
 
     @Column(name = "bo_created_date")
     private Date bookCreatedDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ca_id")
     private Category category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pu_id")
     private Publisher publisher;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "book_author", joinColumns = @JoinColumn(name = "bo_id", referencedColumnName = "bo_id"), inverseJoinColumns = @JoinColumn(name = "au_id", referencedColumnName = "au_id"))
     private List<Author> authors;
 

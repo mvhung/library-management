@@ -17,6 +17,6 @@ public class UserDto implements Serializable {
     String fullName;
     String address;
     String mobile;
-    RoleName status;
+    RoleName group;
     String email;
 }
