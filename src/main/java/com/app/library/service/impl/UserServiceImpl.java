@@ -49,7 +49,7 @@ public class UserServiceImpl implements com.app.library.service.IUserService {
 
         updateUserInfor(id, user);
 
-        user.setUserID(id);
+        user.setUserId(id);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
 
     }
@@ -78,7 +78,15 @@ public class UserServiceImpl implements com.app.library.service.IUserService {
     }
 
     @Override
-    public ResponseEntity<?> deleteUser(int Id) {  return null;
+    public ResponseEntity<?> deleteUser(int id) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isPresent()){
+                userRepository.deleteById(id);
+                return new ResponseEntity<>(user,HttpStatus.OK);
+
+        } else{
+            return new ResponseEntity<>(new User(),HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override
@@ -95,12 +103,12 @@ public class UserServiceImpl implements com.app.library.service.IUserService {
     }
 
     @Override
-    public ResponseEntity<List<User>> listAll() {
+    public ResponseEntity<?> listAll() {
         return null;
     }
 
     @Override
-    public ResponseEntity<List<User>> listByGroup() {
+    public ResponseEntity<?> listByGroup() {
         return null;
     }
 }
