@@ -17,4 +17,7 @@ public class CategoryDto implements Serializable {
     String categoryName;
     String categoryDescription;
     List<Book> books;
+
+    public CategoryDto(String categoryName) {
+    }
 }
