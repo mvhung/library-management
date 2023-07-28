@@ -8,6 +8,7 @@ import com.app.library.model.Publisher;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,9 +25,11 @@ public class BookRequestDto implements Serializable {
     String bookImageLink;
 
     List<Author> authors;
-
+//    List<String> authorNames;
     Category category;
     Publisher publisher;
-
-
+//    public List<String> authorNames(List<Author> authors) {
+//        List<String> getAuthors = new ArrayList<>();
+//        getAuthors.add(authors)
+//    }
 }

@@ -45,6 +45,7 @@ public class Book {
     @JoinColumn(name = "pu_id")
     private Publisher publisher;
 
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "book_author", joinColumns = @JoinColumn(name = "bo_id", referencedColumnName = "bo_id"), inverseJoinColumns = @JoinColumn(name = "au_id", referencedColumnName = "au_id"))
     private List<Author> authors;

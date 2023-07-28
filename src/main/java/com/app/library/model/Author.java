@@ -1,7 +1,7 @@
 package com.app.library.model;
 
 import jakarta.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import java.util.*;
 @Data
@@ -25,7 +25,8 @@ public class Author {
     @Column(name = "au_image")
     private String authorImageUrl;
 
-    @ManyToMany(mappedBy = "authors")
+    @JsonIgnore
+    @ManyToMany(mappedBy = "authors", cascade = CascadeType.ALL)
     private List<Book> books;
 
 }

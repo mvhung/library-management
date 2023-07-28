@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import com.app.library.model.Book;
 import com.app.library.service.impl.BookServiceImpl;
 
+import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/v1/books")
 public class BookController {
@@ -29,6 +32,7 @@ public class BookController {
 
         return bookServiceImpl.getBook(id);
     }
+
     @PostMapping
     public ResponseEntity<?> addBook(@Valid @RequestBody BookRequestDto dto,
                                         BindingResult result) {
@@ -45,13 +49,23 @@ public class BookController {
         Page<Book> bookPage =  bookServiceImpl.findAll(pageable);
         return new ResponseEntity<>(bookPage, HttpStatus.OK);
     }
+    @GetMapping("/category/{categoryName}")
+    public ResponseEntity<List<Book>> getBooksByCategoryName(@PathVariable String categoryName) {
+        List<Book> books = bookServiceImpl.getBooksByCategoryName(categoryName);
+        return new ResponseEntity<>(books,HttpStatus.OK);
+    }
+    @GetMapping("/publisher/{publisherName}")
+    public  ResponseEntity<List<Book>> getBooksByPublisherName(@PathVariable String publisherName) {
+        List<Book> books = bookServiceImpl.getBooksByPublisherName(publisherName);
+        return new ResponseEntity<>(books,HttpStatus.OK);
+    }
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchCategory(@RequestParam("keyword") String keyword) {
+    public ResponseEntity<?> searchBooks(@RequestParam("keyword") String keyword) {
         return bookServiceImpl.searchBook(keyword);
     }
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateCategory(
+    public ResponseEntity<?> updateBook(
             @Valid @PathVariable(name="id") int id,
             @RequestBody BookRequestDto dto , BindingResult result) {
 

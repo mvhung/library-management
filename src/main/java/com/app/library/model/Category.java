@@ -26,6 +26,7 @@ public class Category {
     @Column(name = "ca_description")
     private String categoryDescription;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Book> books;
 

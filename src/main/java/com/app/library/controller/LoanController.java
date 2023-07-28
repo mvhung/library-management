@@ -1,7 +1,7 @@
 package com.app.library.controller;
 
 import com.app.library.model.*;
-import com.app.library.service.impl.IoanServiceImpl;
+import com.app.library.service.impl.LoanServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +12,7 @@ import java.util.List;
 public class LoanController {
 
     @Autowired
-    IoanServiceImpl loanService;
+    LoanServiceImpl loanService;
 
     @GetMapping("{id}")
     public ResponseEntity<Loan> getLoanById(@PathVariable("id") int id) {

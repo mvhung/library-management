@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface AuthorRepository extends JpaRepository<Author, Integer> {
     @Override
     Optional<Author> findById(Integer integer);
-
+    Optional<Author> findByAuthorFullName(String authorFullName);
 }
