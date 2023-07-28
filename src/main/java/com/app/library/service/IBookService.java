@@ -10,7 +10,9 @@ import java.util.List;
 public interface IBookService {
     public ResponseEntity<?> getBook(int id);
     public List<Book> getAllBooks() ;
-
+    public List<Book> getBooksByCategoryName(String categoryName);
+    public List<Book> getBooksByPublisherName(String publisherName);
+    public List<Book> getBookByAuthorName(String authorFullName);
     public ResponseEntity<?> addBook(BookDto dto);
     public ResponseEntity<?> updateBook(int id, BookDto dto);
     ResponseEntity<?> deleteBook(int id);

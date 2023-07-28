@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import com.app.library.model.Book;
 import com.app.library.service.impl.BookServiceImpl;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/books")
 public class BookController {
@@ -29,6 +31,7 @@ public class BookController {
 
         return bookServiceImpl.getBook(id);
     }
+
     @PostMapping
     public ResponseEntity<?> addBook(@Valid @RequestBody BookDto dto,
                                         BindingResult result) {
@@ -38,6 +41,11 @@ public class BookController {
         }
         return bookServiceImpl.addBook(dto);
     }
+    @GetMapping
+    public ResponseEntity<List<Book>> getAllBooks() {
+        List<Book> books = bookServiceImpl.getAllBooks();
+        return new ResponseEntity<>(books,HttpStatus.OK);
+    }
     @GetMapping("/pages")
     public ResponseEntity<?> getBooks(
             @PageableDefault(size = 5, sort ="bookTitle", direction = Sort.Direction.ASC)
@@ -45,13 +53,28 @@ public class BookController {
         Page<Book> bookPage =  bookServiceImpl.findAll(pageable);
         return new ResponseEntity<>(bookPage, HttpStatus.OK);
     }
+    @GetMapping("/category/{categoryName}")
+    public ResponseEntity<List<Book>> getBooksByCategoryName(@PathVariable String categoryName) {
+        List<Book> books = bookServiceImpl.getBooksByCategoryName(categoryName);
+        return new ResponseEntity<>(books,HttpStatus.OK);
+    }
+    @GetMapping("/publisher/{publisherName}")
+    public  ResponseEntity<List<Book>> getBooksByPublisherName(@PathVariable String publisherName) {
+        List<Book> books = bookServiceImpl.getBooksByPublisherName(publisherName);
+        return new ResponseEntity<>(books,HttpStatus.OK);
+    }
 
+    @GetMapping("/author/{authorName}")
+    public ResponseEntity<List<Book>> getBookByAuthorName(@PathVariable String authorName) {
+        List<Book> books = bookServiceImpl.getBookByAuthorName(authorName);
+        return new ResponseEntity<>(books,HttpStatus.OK);
+    }
     @GetMapping("/search")
-    public ResponseEntity<?> searchCategory(@RequestParam("keyword") String keyword) {
+    public ResponseEntity<?> searchBooks(@RequestParam("keyword") String keyword) {
         return bookServiceImpl.searchBook(keyword);
     }
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateCategory(
+    public ResponseEntity<?> updateBook(
             @Valid @PathVariable(name="id") int id,
             @RequestBody BookDto dto , BindingResult result) {
 

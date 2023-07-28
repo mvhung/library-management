@@ -9,9 +9,10 @@ import java.io.Serializable;
  * DTO for {@link com.app.library.model.User}
  */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class UserDto implements Serializable {
-    String userId;
+    int userId;
     String password;
     String username;
     String fullName;

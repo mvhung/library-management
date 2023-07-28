@@ -30,4 +30,12 @@ public class Category {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Book> books;
 
+    public void removeBook(Book book) {
+        // Kiểm tra xem cuốn sách có tồn tại trong list books của danh muc hay không
+        if (books.contains(book)) {
+            books.remove(book);
+            book.setCategory(null); // set category thành null để gỡ bỏ liên kết
+        }
+    }
+
 }

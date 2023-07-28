@@ -5,17 +5,16 @@ import com.app.library.model.Book;
 import com.app.library.model.Category;
 import com.app.library.model.Publisher;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 /**
  * DTO for {@link Book}
  */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class BookDto implements Serializable {
     int bookId;
@@ -24,10 +23,13 @@ public class BookDto implements Serializable {
     int bookQuantity;
     String bookDescription;
     String bookImageLink;
-    List<Author> authors;
 
+    List<Author> authors;
+//    List<String> authorNames;
     Category category;
     Publisher publisher;
-
-
+//    public List<String> authorNames(List<Author> authors) {
+//        List<String> getAuthors = new ArrayList<>();
+//        getAuthors.add(authors)
+//    }
 }
