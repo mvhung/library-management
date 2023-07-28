@@ -1,5 +1,5 @@
 package com.app.library.service.impl;
-import com.app.library.dto.BookRequestDto;
+import com.app.library.dto.BookDto;
 import com.app.library.exception.object.ObjectException;
 import com.app.library.model.Author;
 import com.app.library.model.Category;
@@ -33,7 +33,6 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
     private AuthorRepository authorRepository;
 
 
-
     public Book save(Book book) {
         return bookRepository.save(book);
     }
@@ -41,7 +40,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
     public ResponseEntity<?> getBook(int id) {
         try {
             Book book = bookRepository.findById(id).orElseThrow(() -> new ObjectException( " "+ id));
-            return new ResponseEntity<>(book, HttpStatus.CREATED);
+            return new ResponseEntity<>(book, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ObjectException("No get detail book" );
@@ -90,7 +89,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
 
 
     @Override
-    public ResponseEntity<?> addBook(BookRequestDto dto) {
+    public ResponseEntity<?> addBook(BookDto dto) {
         try {
             Optional<Book> existingBook = bookRepository.findByBookTitle(dto.getBookTitle());
 
@@ -130,7 +129,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
         }
     }
 
-    private void checkExistCategory(BookRequestDto dto) {
+    private void checkExistCategory(BookDto dto) {
         // Kiểm tra  category nếu tồn tại trong dto
         if (dto.getCategory() != null) {
             Category category = dto.getCategory();
@@ -144,7 +143,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
         }
     }
 
-    private void checkExistPublisher(BookRequestDto dto) {
+    private void checkExistPublisher(BookDto dto) {
         // Kiểm tra  publisher nếu tồn tại trong dto
        if(dto.getPublisher() != null) {
            Publisher publisher = dto.getPublisher();
@@ -156,7 +155,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
            }
        }
     }
-    private void checkExistAuthors(BookRequestDto dto, Book book) {
+    private void checkExistAuthors(BookDto dto, Book book) {
         if (dto.getAuthors() != null && !dto.getAuthors().isEmpty()) {
             List<Author> authors = new ArrayList<>();
             for (Author author : dto.getAuthors()) {
@@ -174,7 +173,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
 
 
     @Override
-    public ResponseEntity<?> updateBook(int id, BookRequestDto dto) {
+    public ResponseEntity<?> updateBook(int id, BookDto dto) {
         Book book = new Book();
         BeanUtils.copyProperties(dto, book);
 
@@ -242,7 +241,13 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
             if (category != null) {
                 category.removeBook(existed);
             }
-            existed.setAuthors(new ArrayList<>());
+            List<Author> authors = existed.getAuthors();
+
+            for (Author author : authors) {
+                if (author != null) {
+                    author.removeBook(existed);
+                }
+            }
 
             bookRepository.delete(existed);
             return new ResponseEntity<>("Book with Id " + id +" was deleted", HttpStatus.OK);

@@ -1,6 +1,6 @@
 package com.app.library.controller;
 
-import com.app.library.dto.BookRequestDto;
+import com.app.library.dto.BookDto;
 import com.app.library.dto.LoanDto;
 import com.app.library.dto.UserDto;
 import com.app.library.model.*;
@@ -33,7 +33,7 @@ public class LoanController {
     }
 
     @PutMapping(value = "/update/{id}")
-    public ResponseEntity<Loan> updateLoan(@PathVariable("id") int id, @RequestBody LoanDto newLoan, @RequestBody UserDto newUser, @RequestBody BookRequestDto newBook) {
+    public ResponseEntity<Loan> updateLoan(@PathVariable("id") int id, @RequestBody LoanDto newLoan, @RequestBody UserDto newUser, @RequestBody BookDto newBook) {
         ResponseEntity<?> loan = loanService.updateLoan(id, newLoan, newUser, newBook);
         if (loan == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

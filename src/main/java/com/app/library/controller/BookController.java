@@ -1,6 +1,6 @@
 package com.app.library.controller;
 
-import com.app.library.dto.BookRequestDto;
+import com.app.library.dto.BookDto;
 import com.app.library.service.impl.MapValidationErrorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addBook(@Valid @RequestBody BookRequestDto dto,
+    public ResponseEntity<?> addBook(@Valid @RequestBody BookDto dto,
                                         BindingResult result) {
         ResponseEntity<?> responseEntity =  mapValidationErrorService.mapValidationFields(result);
         if(responseEntity != null) {
@@ -76,7 +76,7 @@ public class BookController {
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateBook(
             @Valid @PathVariable(name="id") int id,
-            @RequestBody BookRequestDto dto , BindingResult result) {
+            @RequestBody BookDto dto , BindingResult result) {
 
         ResponseEntity<?> responseEntity =  mapValidationErrorService.mapValidationFields(result);
         if(responseEntity != null) {

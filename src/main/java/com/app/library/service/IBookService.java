@@ -1,6 +1,6 @@
 package com.app.library.service;
 
-import com.app.library.dto.BookRequestDto;
+import com.app.library.dto.BookDto;
 import org.springframework.http.ResponseEntity;
 
 import com.app.library.model.Book;
@@ -13,8 +13,8 @@ public interface IBookService {
     public List<Book> getBooksByCategoryName(String categoryName);
     public List<Book> getBooksByPublisherName(String publisherName);
     public List<Book> getBookByAuthorName(String authorFullName);
-    public ResponseEntity<?> addBook(BookRequestDto dto);
-    public ResponseEntity<?> updateBook(int id, BookRequestDto dto);
+    public ResponseEntity<?> addBook(BookDto dto);
+    public ResponseEntity<?> updateBook(int id, BookDto dto);
     ResponseEntity<?> deleteBook(int id);
     ResponseEntity<?> searchBook(String keyword);
 

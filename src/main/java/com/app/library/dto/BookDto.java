@@ -8,15 +8,15 @@ import com.app.library.model.Publisher;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * DTO for {@link Book}
  */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
-public class BookRequestDto implements Serializable {
+public class BookDto implements Serializable {
     int bookId;
     String bookTitle;
     int bookPublishedYear;

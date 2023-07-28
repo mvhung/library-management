@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 
-import com.app.library.dto.BookRequestDto;
+import com.app.library.dto.BookDto;
 import com.app.library.dto.LoanDto;
 import com.app.library.dto.UserDto;
 import com.app.library.model.*;
@@ -43,7 +43,7 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
     }
 
     @Override
-    public ResponseEntity<?> updateLoan(int Id, LoanDto newLoan, UserDto newUser, BookRequestDto newBook) {
+    public ResponseEntity<?> updateLoan(int Id, LoanDto newLoan, UserDto newUser, BookDto newBook) {
         Optional<Loan> loan = loanRepository.findById(Id);
         if (!loan.isPresent()) {
             throw new RuntimeException("Cannot find loan with id: " + Id);

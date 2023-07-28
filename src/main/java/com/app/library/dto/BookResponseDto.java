@@ -4,6 +4,7 @@ import com.app.library.model.Author;
 import com.app.library.model.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+
 @AllArgsConstructor
 public class BookResponseDto  implements Serializable {
     private int bookId;
