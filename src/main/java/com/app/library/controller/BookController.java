@@ -17,7 +17,6 @@ import com.app.library.model.Book;
 import com.app.library.service.impl.BookServiceImpl;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/books")
@@ -42,6 +41,11 @@ public class BookController {
         }
         return bookServiceImpl.addBook(dto);
     }
+    @GetMapping
+    public ResponseEntity<List<Book>> getAllBooks() {
+        List<Book> books = bookServiceImpl.getAllBooks();
+        return new ResponseEntity<>(books,HttpStatus.OK);
+    }
     @GetMapping("/pages")
     public ResponseEntity<?> getBooks(
             @PageableDefault(size = 5, sort ="bookTitle", direction = Sort.Direction.ASC)
@@ -60,6 +64,11 @@ public class BookController {
         return new ResponseEntity<>(books,HttpStatus.OK);
     }
 
+    @GetMapping("/author/{authorName}")
+    public ResponseEntity<List<Book>> getBookByAuthorName(@PathVariable String authorName) {
+        List<Book> books = bookServiceImpl.getBookByAuthorName(authorName);
+        return new ResponseEntity<>(books,HttpStatus.OK);
+    }
     @GetMapping("/search")
     public ResponseEntity<?> searchBooks(@RequestParam("keyword") String keyword) {
         return bookServiceImpl.searchBook(keyword);

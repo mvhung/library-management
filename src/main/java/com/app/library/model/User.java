@@ -44,6 +44,4 @@ public class User {
     private int group;
     @Column(name = "us_email", nullable = false)
     private String email;
-
-
 }

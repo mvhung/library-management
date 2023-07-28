@@ -29,4 +29,10 @@ public class Author {
     @ManyToMany(mappedBy = "authors", cascade = CascadeType.ALL)
     private List<Book> books;
 
+    public void removeBook(Book book) {
+        if (books.contains(book)) {
+            books.remove(book);
+            book.setAuthors(null);
+        }
+    }
 }

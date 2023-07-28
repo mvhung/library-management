@@ -16,4 +16,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     @Query("SELECT b FROM Book b WHERE LOWER(b.publisher.publisherName) = LOWER(:publisherName)")
     List<Book> findByPublisherName(@Param("publisherName") String publisherName);
+
+    @Query("SELECT DISTINCT b FROM Book b JOIN b.authors a WHERE LOWER(a.authorFullName) = LOWER(:authorFullName)")
+    List<Book> findBooksByAuthorNameIgnoreCase(@Param("authorFullName") String authorFullName);
 }

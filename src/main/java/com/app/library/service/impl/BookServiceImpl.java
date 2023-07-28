@@ -73,6 +73,17 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
         }
     }
 
+    @Override
+    public List<Book> getBookByAuthorName(String authorFullName) {
+        try {
+            return bookRepository.findBooksByAuthorNameIgnoreCase(authorFullName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ObjectException("No get detail books");
+        }
+
+    }
+
     public Page<Book> findAll(Pageable pageable)  {
         return bookRepository.findAll(pageable);
     }
@@ -231,6 +242,8 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
             if (category != null) {
                 category.removeBook(existed);
             }
+            existed.setAuthors(new ArrayList<>());
+
             bookRepository.delete(existed);
             return new ResponseEntity<>("Book with Id " + id +" was deleted", HttpStatus.OK);
         } catch (Exception e) {

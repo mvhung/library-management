@@ -12,6 +12,7 @@ public interface IBookService {
     public List<Book> getAllBooks() ;
     public List<Book> getBooksByCategoryName(String categoryName);
     public List<Book> getBooksByPublisherName(String publisherName);
+    public List<Book> getBookByAuthorName(String authorFullName);
     public ResponseEntity<?> addBook(BookRequestDto dto);
     public ResponseEntity<?> updateBook(int id, BookRequestDto dto);
     ResponseEntity<?> deleteBook(int id);
