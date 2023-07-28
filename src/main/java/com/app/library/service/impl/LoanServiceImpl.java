@@ -5,14 +5,24 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+
+import com.app.library.dto.BookRequestDto;
+import com.app.library.dto.LoanDto;
+import com.app.library.dto.UserDto;
 import com.app.library.model.*;
 import com.app.library.repository.LoanRepository;
 
 
 @Service
-public class IoanServiceImpl implements com.app.library.service.ILoanService {
+public class LoanServiceImpl implements com.app.library.service.ILoanService {
     @Autowired
     private LoanRepository loanRepository;
+
+    @Autowired
+    private com.app.library.service.IUserService userService;
+
+    @Autowired
+    private com.app.library.service.IBookService bookService;
 
     @Override
     public ResponseEntity<Loan> getLoan(int Id) {
@@ -33,25 +43,31 @@ public class IoanServiceImpl implements com.app.library.service.ILoanService {
     }
 
     @Override
-    public Loan updateLoan(int Id, Loan newLoan) {
+    public ResponseEntity<?> updateLoan(int Id, LoanDto newLoan, UserDto newUser, BookRequestDto newBook) {
         Optional<Loan> loan = loanRepository.findById(Id);
         if (!loan.isPresent()) {
             throw new RuntimeException("Cannot find loan with id: " + Id);
         }
         Loan loan1 = loan.get();
-        loan1.setLoanOfDate(newLoan.getLoanOfDate());  
+        loan1.setLoanNoOfDate(newLoan.getLoanNoOfDate());  
         loan1.setLoanCreateDate(newLoan.getLoanCreateDate());
-        loan1.setUser(newLoan.getUser());
-        loan1.setBook(newLoan.getBook());
-        loan1.setLoanID(newLoan.getLoanID());  
-        return loanRepository.save(loan1);
+        
+        ResponseEntity<?> user = userService.getUser(newUser.getUserId());
+        loan1.setUser((User) user.getBody());
+        
+        ResponseEntity<?> book = bookService.getBook(newBook.getBookId());
+        loan1.setBook((Book) book.getBody());
+
+        loan1.setLoanId(newLoan.getLoanId());  
+        loanRepository.save(loan1);
+        return new ResponseEntity<>(loan1, HttpStatus.OK);
     }
 
     @Override
     public Loan addLoan(int Id) {
         if (!loanRepository.findById(Id).isPresent()) {
             Loan newLoan = new Loan();
-            newLoan.setLoanID(Id);
+            newLoan.setLoanId(Id);
             return loanRepository.save(newLoan);
         }
         return null;
