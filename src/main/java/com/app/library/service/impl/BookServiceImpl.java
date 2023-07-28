@@ -134,6 +134,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
     }
 
     private void checkExistPublisher(BookRequestDto dto) {
+        // Kiểm tra  publisher nếu tồn tại trong dto
        if(dto.getPublisher() != null) {
            Publisher publisher = dto.getPublisher();
            Optional<Publisher> existingPublisher = publisherRepository.findByPublisherName(dto.getPublisher().getPublisherName());
