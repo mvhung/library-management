@@ -48,7 +48,7 @@ public class UserServiceImpl implements com.app.library.service.IUserService {
 
         updateUserInfor(id, user);
 
-        user.setUserID(id);
+        user.setUserId(id);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
 
     }
