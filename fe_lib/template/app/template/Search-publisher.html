@@ -28,7 +28,7 @@
     <meta name="description" content="Premium Quality and Responsive UI for Home.">
     <meta name="author" content="ThemePixels">
 
-    <title>Search Template Design  - Bracket Plus Responsive Bootstrap 4 Admin Template</title>
+    <title>Search Effect Template Design - Bracket Plus Responsive Bootstrap 4 Admin Template</title>
 
     <!-- vendor css -->
     <link href="../lib/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
@@ -65,9 +65,9 @@
             <span class="menu-item-label">Search</span>
           </a><!-- br-menu-link -->
           <ul class="br-menu-sub">
-            <li class="sub-item"><a href="Search.html" class="sub-link active">Author</a></li>
-            <li class="sub-item"><a href="Search-layouts.html" class="sub-link">Category</a></li>
-            <li class="sub-item"><a href="Search-effects.html" class="sub-link">Publisher</a></li>
+            <li class="sub-item"><a href="Search_author.html" class="sub-link">Author</a></li>
+            <li class="sub-item"><a href="Search-category.html" class="sub-link">Category</a></li>
+            <li class="sub-item"><a href="Search-publisher.html" class="sub-link active">Publisher</a></li>
           </ul>
         </li><!-- br-menu-item -->
         
@@ -748,438 +748,41 @@
         <nav class="breadcrumb pd-0 mg-0 tx-12">
           <a class="breadcrumb-item" href="index.html">Bracket</a>
           <a class="breadcrumb-item" href="#">Search</a>
-          <span class="breadcrumb-item active">Basic Search</span>
+          <span class="breadcrumb-item active">Search by Publisher</span>
         </nav>
       </div><!-- br-pageheader -->
       <div class="br-pagetitle">
         <i class="icon fa fa-search"></i>
         <div>
-          <h4>Basic Search</h4>
+          <h4>Search by Publisher</h4>
           <p class="mg-b-0">Search share general markup and styles, from the base .nav class to the active and disabled states.</p>
         </div>
       </div><!-- d-flex -->
 
       <div class="br-pagebody">
         <div class="br-section-wrapper">
-          <h6 class="br-section-label">Basic Search</h6>
-          <p class="br-section-text">Below is an example of a basic Search for both light and dark. </p>
 
-          <div class="pd-10 bd rounded">
-            <ul class="nav nav-gray-600 flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
+          <h6 class="br-section-label">Search by Publisher</h6>
+          <div class="category-style">
+            <div class="category-style-col">
+              <a href=""><p>truyện tranh</p></a>
+              <a href=""><p>tiểu thuyết</p></a>
+              <a href=""><p>Thơ</p></a>
+            </div>
+            <div class="category-style-col">
+              <a href=""><p>Khoa học tự nhiên</p></a>
+              <a href=""><p>khoa học xã hội</p></a>
+              <a href=""><p>Ngôn ngữ- giáo dục</p></a>
+            </div>
+            <div class="category-style-col">
+              <a href=""><p>Kinh tế - Luật</p></a>
+              <a href=""><p>Tạp chí</p></a>
+              <a href=""><p>Hết</p></a>
+            </div>
+          </div>
+          
 
-          <div class="pd-10 mg-t-20 bg-gray-200 rounded">
-            <ul class="nav nav-gray-700 flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-
-          <div class="pd-10 mg-t-20 bg-dark rounded">
-            <ul class="nav nav-white-800 flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-
-          <p class="br-section-label-sm">Source Code</p>
-          <pre><code class="html pd-20">&lt;div class=&quot;pd-10 bd rounded&quot;&gt;
-  &lt;ul class=&quot;nav nav-gray-600 flex-column flex-sm-row&quot; role=&quot;tablist&quot;&gt;
-    &lt;li class=&quot;nav-item&quot;&gt;&lt;a class=&quot;nav-link active&quot; data-toggle=&quot;tab&quot; href=&quot;#&quot; role=&quot;tab&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
-    &lt;li class=&quot;nav-item&quot;&gt;&lt;a class=&quot;nav-link&quot; data-toggle=&quot;tab&quot; href=&quot;#&quot; role=&quot;tab&quot;&gt;About&lt;/a&gt;&lt;/li&gt;
-    &lt;li class=&quot;nav-item&quot;&gt;&lt;a class=&quot;nav-link&quot; data-toggle=&quot;tab&quot; href=&quot;#&quot; role=&quot;tab&quot;&gt;Features&lt;/a&gt;&lt;/li&gt;
-    &lt;!-- more menu here --&gt;
-  &lt;/ul&gt;
-&lt;/div&gt;&lt;!-- pd-10 --&gt;</code></pre>
-
-          <h6 class="br-section-label">Vertical Search</h6>
-          <p class="br-section-text">Below is an example of a basic Search in a vertical mode.</p>
-
-          <div class="row">
-            <div class="col-md-4 col-xl-3">
-              <div class="pd-10 bd rounded">
-                <ul class="nav nav-gray-600 flex-column" role="tablist">
-                  <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-                </ul>
-              </div><!-- pd-10 -->
-            </div><!-- col-3 -->
-            <div class="col-md-4 col-xl-3 mg-t-30 mg-md-t-0">
-              <div class="pd-10 bg-gray-200 rounded">
-                <ul class="nav nav-gray-700 flex-column" role="tablist">
-                  <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-                </ul>
-              </div><!-- pd-10 -->
-            </div><!-- col-3 -->
-            <div class="col-md-4 col-xl-3 mg-t-30 mg-md-t-0">
-              <div class="pd-10 bg-dark rounded">
-                <ul class="nav nav-white-800 flex-column" role="tablist">
-                  <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-                </ul>
-              </div><!-- pd-10 -->
-            </div><!-- col-3 -->
-          </div><!-- row -->
-
-          <p class="br-section-label-sm">Source Code</p>
-          <pre><code class="html pd-20">&lt;div class=&quot;pd-10 bd rounded&quot;&gt;
-  &lt;ul class=&quot;nav nav-gray-600 flex-column&quot; role=&quot;tablist&quot;&gt;...&lt;/ul&gt;
-&lt;/div&gt;&lt;!-- pd-10 --&gt;</code></pre>
-
-          <h6 class="br-section-label">Default Pills Search</h6>
-          <p class="br-section-text">Below is an example of a pill Search in both light and dark.</p>
-
-          <div class="pd-10 bd rounded">
-            <ul class="nav nav-pills flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-
-          <div class="pd-10 bg-gray-300 rounded mg-t-20">
-            <ul class="nav nav-pills flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-
-          <div class="pd-10 bg-gray-900 rounded mg-t-20">
-            <ul class="nav nav-pills nav-pills-for-dark flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-
-          <p class="br-section-label-sm">Source Code</p>
-          <pre><code class="html pd-20">&lt;div class=&quot;pd-10 bd rounded&quot;&gt;
-  &lt;ul class=&quot;nav nav-pills flex-column flex-md-row&quot; role=&quot;tablist&quot;&gt;...&lt;/ul&gt;
-&lt;/div&gt;&lt;!-- pd-10 --&gt;</code></pre>
-
-          <h6 class="br-section-label">Vertical Pills Search</h6>
-          <p class="br-section-text">Below is an example of a pill Search in vertical mode.</p>
-
-          <div class="row">
-            <div class="col-md-4 col-xl-3">
-              <div class="pd-10 bd rounded">
-                <ul class="nav nav-pills flex-column" role="tablist">
-                  <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-                </ul>
-              </div><!-- pd-10 -->
-            </div><!-- col-3 -->
-            <div class="col-md-4 col-xl-3 mg-t-30 mg-md-t-0">
-              <div class="pd-10 bg-gray-300 rounded">
-                <ul class="nav nav-pills flex-column" role="tablist">
-                  <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-                </ul>
-              </div><!-- pd-10 -->
-            </div><!-- col-3 -->
-            <div class="col-md-4 col-xl-3 mg-t-30 mg-md-t-0">
-              <div class="pd-10 bg-gray-900 rounded">
-                <ul class="nav nav-pills nav-pills-for-dark flex-column" role="tablist">
-                  <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-                </ul>
-              </div><!-- pd-10 -->
-            </div><!-- col-3 -->
-          </div><!-- row -->
-
-          <p class="br-section-label-sm">Source Code</p>
-          <pre><code class="html pd-20">&lt;div class=&quot;pd-10 bd rounded&quot;&gt;
-  &lt;ul class=&quot;nav nav-pills flex-column&quot; role=&quot;tablist&quot;&gt;...&lt;/ul&gt;
-&lt;/div&gt;&lt;!-- pd-10 --&gt;</code></pre>
-
-          <h6 class="br-section-label">Horizontal Alignment</h6>
-          <p class="br-section-text">A Search with center and right in which left is the default.</p>
-
-          <div class="pd-10 bd rounded">
-            <ul class="nav nav-gray-600 flex-column flex-md-row justify-content-center" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-          <div class="pd-10 bd rounded mg-t-10">
-            <ul class="nav nav-pills flex-column flex-md-row justify-content-center" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-
-          <div class="pd-10 bd rounded mg-t-30">
-            <ul class="nav nav-gray-600 flex-column flex-md-row justify-content-end" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-          <div class="pd-10 bd rounded mg-t-10">
-            <ul class="nav nav-pills flex-column flex-md-row justify-content-end" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-
-          <p class="br-section-label-sm">Source Code</p>
-          <pre><code class="html pd-20">&lt;div class=&quot;pd-10 bd rounded&quot;&gt;
-  &lt;ul class=&quot;nav nav-pills flex-column flex-md-row justify-content-center&quot; role=&quot;tablist&quot;&gt;...&lt;/ul&gt;
-&lt;/div&gt;&lt;!-- pd-10 --&gt;</code></pre>
-
-          <pre><code class="html pd-20">&lt;div class=&quot;pd-10 bd rounded&quot;&gt;
-&lt;ul class=&quot;nav nav-pills flex-column flex-md-row justify-content-end&quot; role=&quot;tablist&quot;&gt;...&lt;/ul&gt;
-&lt;/div&gt;&lt;!-- pd-10 --&gt;</code></pre>
-
-          <h6 class="br-section-label">Colored Bar Variations</h6>
-          <p class="br-section-text">A Search with colored bar that wrapped the Search.</p>
-
-          <div class="pd-10 bg-purple rounded">
-            <ul class="nav nav-white-800 flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-          <div class="pd-10 mg-t-20 bg-info rounded">
-            <ul class="nav nav-white-800 flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-          <div class="pd-10 mg-t-20 bg-teal rounded">
-            <ul class="nav nav-white-800 flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-
-          <p class="br-section-label-sm">Source Code</p>
-          <pre><code class="html pd-20">&lt;div class=&quot;pd-10 bg-teal rounded&quot;&gt;
-  &lt;ul class=&quot;nav nav-pills flex-column flex-md-row&quot; role=&quot;tablist&quot;&gt;...&lt;/ul&gt;
-&lt;/div&gt;&lt;!-- pd-10 --&gt;</code></pre>
-
-          <p class="br-section-label-sm">Class Reference</p>
-          <table class="table table-bordered tx-13 tx-gray-700 bd">
-            <thead>
-              <tr class="bg-gray-100 tx-11 tx-uppercase tx-gray-800">
-                <th class="wd-40p">Class</th>
-                <th class="wd-60p">Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code class="pd-0 bg-transparent">class="pd-10 bg-[value] rounded"</code></td>
-                <td>primary | success | warning | danger | info | teal | indigo | purple | pink | dark</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <h6 class="br-section-label">Gradient Bar Variations</h6>
-          <p class="br-section-text">A Search with gradient color bar that wrapped the Search.</p>
-
-          <div class="pd-10 bg-purple bg-mantle rounded">
-            <ul class="nav nav-white-800 flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-          <div class="pd-10 mg-t-20 bg-reef rounded">
-            <ul class="nav nav-white-800 flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-          <div class="pd-10 mg-t-20 bg-transfile rounded">
-            <ul class="nav nav-white-800 flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Features</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Blog</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-
-          <p class="br-section-label-sm">Source Code</p>
-          <pre><code class="html pd-20">&lt;div class=&quot;pd-10 bg-mantle rounded&quot;&gt;
-  &lt;ul class=&quot;nav nav-pills flex-column flex-md-row&quot; role=&quot;tablist&quot;&gt;...&lt;/ul&gt;
-&lt;/div&gt;&lt;!-- pd-10 --&gt;</code></pre>
-
-          <p class="br-section-label-sm">Class Reference</p>
-          <table class="table table-bordered tx-13 tx-gray-700 bd">
-            <thead>
-              <tr class="bg-gray-100 tx-11 tx-uppercase tx-gray-800">
-                <th class="wd-40p">Class</th>
-                <th class="wd-60p">Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code class="pd-0 bg-transparent">class="pd-10 bg-[value] rounded"</code></td>
-                <td>mantle | reef | transfile | neon | delicate | emerald | mojito | dance | teal-love | crystal-clear | grandeur | flickr | royal | firewatch</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <h6 class="br-section-label">Outline Search</h6>
-          <p class="br-section-text">Below is a type of Search that have a line at the bottom of active link.</p>
-
-          <div class="ht-md-60 pd-x-20 bg-gray-200 rounded d-flex align-items-center justify-content-center">
-            <ul class="nav nav-outline align-items-center flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-
-          <div class="ht-md-60 pd-x-20 bg-dark rounded d-flex align-items-center justify-content-center mg-t-20">
-            <ul class="nav nav-outline nav-outline-for-dark align-items-center flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-
-          <p class="br-section-label-sm">Source Code</p>
-          <pre><code class="html pd-20">&lt;div class=&quot;pd-10 bg-gray-200 rounded&quot;&gt;
-  &lt;ul class=&quot;nav nav-outline flex-column flex-md-row&quot; role=&quot;tablist&quot;&gt;...&lt;/ul&gt;
-&lt;/div&gt;&lt;!-- pd-10 --&gt;</code></pre>
-          <pre class="mg-t-20"><code class="html pd-20">&lt;div class=&quot;pd-10 bg-dark rounded&quot;&gt;
-  &lt;ul class=&quot;nav nav-outline nav-outline-for-dark flex-column flex-md-row&quot; role=&quot;tablist&quot;&gt;...&lt;/ul&gt;
-&lt;/div&gt;&lt;!-- pd-10 --&gt;</code></pre>
-
-          <h6 class="br-section-label">Colored Active Outline Search</h6>
-          <p class="br-section-text">Below is a type of Search that have a line at the bottom of active link.</p>
-
-          <div class="ht-md-60 pd-x-20 bg-gray-200 rounded d-flex align-items-center justify-content-center">
-            <ul class="nav nav-outline active-info align-items-center flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-
-          <div class="ht-md-60 pd-x-20 bg-dark rounded d-flex align-items-center justify-content-center mg-t-20">
-            <ul class="nav nav-outline nav-outline-for-dark active-info align-items-center flex-column flex-md-row" role="tablist">
-              <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#" role="tab">Home</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">About</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Services</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#" role="tab">Contact</a></li>
-            </ul>
-          </div><!-- pd-10 -->
-
-          <p class="br-section-label-sm">Source Code</p>
-          <pre><code class="html pd-20">&lt;div class=&quot;pd-10 bg-gray-200 rounded&quot;&gt;
-  &lt;ul class=&quot;nav nav-outline active-info flex-column flex-md-row&quot; role=&quot;tablist&quot;&gt;...&lt;/ul&gt;
-&lt;/div&gt;&lt;!-- pd-10 --&gt;</code></pre>
-
-<pre><code class="html pd-20">&lt;div class=&quot;pd-10 bg-gray-200 rounded&quot;&gt;
-  &lt;ul class=&quot;nav nav-outline nav-outline-for-dark active-info flex-column flex-md-row&quot; role=&quot;tablist&quot;&gt;...&lt;/ul&gt;
-&lt;/div&gt;&lt;!-- pd-10 --&gt;</code></pre>
-
-          <p class="br-section-label-sm">Class Reference</p>
-          <table class="table table-bordered tx-13 tx-gray-700 bd">
-            <thead>
-              <tr class="bg-gray-100 tx-11 tx-uppercase tx-gray-800">
-                <th class="wd-40p">Class</th>
-                <th class="wd-60p">Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code class="pd-0 bg-transparent">class="nav nav-outline active-[value]"</code></td>
-                <td>primary | success | warning | danger | info | indigo | orange | purple | teal | pink</td>
-              </tr>
-            </tbody>
-          </table>
+         
 
 
         </div><!-- br-section-wrapper -->
@@ -1207,6 +810,20 @@
     <script src="../lib/highlightjs/highlight.pack.min.js"></script>
 
     <script src="../js/bracket.js"></script>
+    <script>
+      $(function(){
+        'use strict';
+
+        $('.nav-effect .nav-item').on('click', function () {
+          var navItem = $(this).parent().find('.nav-item');
+          var thisItem = $(this);
+          navItem.each(function(){
+            $(this).removeClass('current');
+          });
+          thisItem.addClass('current');
+        })
+      });
+    </script>
 
   </body>
 </html>

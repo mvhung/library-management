@@ -40139,3 +40139,53 @@ a.hover-white-8:hover, a.hover-white-8:focus {
 
 .mx-wd-1350 {
   max-width: 1350px; }
+.anhonepi img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+}
+.content-item {
+  display: flex;
+}
+.content-item-img {
+  width: 30%;
+  height: 50%;
+}
+.content-item-img img {
+  width: 80%;
+    height: 50%;
+    object-fit: cover;
+    border-radius: 20px;
+}
+.content-item-text {
+  width: 70%;
+    padding: 20px 0 0 50px;
+}
+.name-author h4 {
+  margin-left: 0px;
+  margin-bottom: 10px;
+  color: black;
+  font-size: 30px;
+}
+.buttonstyle {
+  height: 30px;
+  width: 100px;
+  background-color: var(--blue);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.5s ease;
+}
+.buttonstyle:hover {
+  background-color: tomato;
+}
+.category-style {
+  display: flex;
+}
+.category-style-col {
+  flex: 1;
+  
+  padding: 10px;
+}
