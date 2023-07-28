@@ -8,6 +8,7 @@ import java.io.Serializable;
  * DTO for {@link com.app.library.model.Author}
  */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class AuthorDto implements Serializable {
     int authorId;
