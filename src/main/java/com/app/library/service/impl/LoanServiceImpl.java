@@ -5,13 +5,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-
-import com.app.library.dto.BookDto;
-import com.app.library.dto.LoanDto;
-import com.app.library.dto.UserDto;
+import com.app.library.dto.*;
 import com.app.library.model.*;
-import com.app.library.repository.LoanRepository;
-
+import com.app.library.repository.*;
+import com.app.library.service.*;
 
 @Service
 public class LoanServiceImpl implements com.app.library.service.ILoanService {
@@ -19,10 +16,13 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
     private LoanRepository loanRepository;
 
     @Autowired
-    private com.app.library.service.IUserService userService;
+    private BookRepository bookRepository;
 
     @Autowired
-    private com.app.library.service.IBookService bookService;
+    private IUserService userService;
+
+    @Autowired
+    private IBookService bookService;
 
     @Override
     public ResponseEntity<Loan> getLoan(int Id) {
@@ -49,16 +49,42 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
             throw new RuntimeException("Cannot find loan with id: " + Id);
         }
         Loan loan1 = loan.get();
-        loan1.setLoanNoOfDate(newLoan.getLoanNoOfDate());  
-        loan1.setLoanCreateDate(newLoan.getLoanCreateDate());
-        
-        ResponseEntity<?> user = userService.getUser(newUser.getUserId());
-        loan1.setUser((User) user.getBody());
-        
-        ResponseEntity<?> book = bookService.getBook(newBook.getBookId());
-        loan1.setBook((Book) book.getBody());
+        int oldQuantity = loan1.getBook().getBookQuantity();
+        Book oldBook = loan1.getBook();
 
-        loan1.setLoanId(newLoan.getLoanId());  
+        // Update loan properties
+        loan1.setLoanNoOfDate(newLoan.getLoanNoOfDate());
+        loan1.setLoanCreateDate(newLoan.getLoanCreateDate());
+
+        // Update user and book references
+        ResponseEntity<?> userResponse = userService.getUser(newUser.getUserId());
+        if (userResponse.getStatusCode() == HttpStatus.OK) {
+            User user = (User) userResponse.getBody();
+            loan1.setUser(user);
+        }
+
+        ResponseEntity<?> bookResponse = bookService.getBook(newBook.getBookId());
+        if (bookResponse.getStatusCode() == HttpStatus.OK) {
+            Book book = (Book) bookResponse.getBody();
+            loan1.setBook(book);
+            if (book != null) {
+                int updatedQuantity = book.getBookQuantity() - 1;
+                if (updatedQuantity >= 0) {
+                    book.setBookQuantity(updatedQuantity);
+                    loan1.setBook(book);
+                    bookRepository.save(book);
+                    oldBook.setBookQuantity(oldQuantity + 1);
+                    bookRepository.save(oldBook);
+                } else {
+                    throw new RuntimeException("Book quantity cannot be negative.");
+                }
+            } else {
+                throw new RuntimeException("Book not found with id: " + newBook.getBookId());
+            }
+        } else {
+            throw new RuntimeException("Failed to get book with id: " + newBook.getBookId());
+        }
+
         loanRepository.save(loan1);
         return new ResponseEntity<>(loan1, HttpStatus.OK);
     }
