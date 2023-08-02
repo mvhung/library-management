@@ -2,10 +2,15 @@ package com.app.library.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Data
 
@@ -34,8 +39,16 @@ public class Book {
     @Column(name = "bo_image")
     private String bookImageLink;
 
-    @Column(name = "bo_created_date")
-    private Date bookCreatedDate;
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    @CreatedBy
+    private Long createdBy;
+    @LastModifiedBy
+    private Long updatedBy;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ca_id")
@@ -52,14 +65,13 @@ public class Book {
 
 
 
-    public Book(String bookTitle, int bookPublishedYear, int bookQuantity, String bookDescription, String bookImageLink,
-                Date bookCreatedDate) {
+    public Book(String bookTitle, int bookPublishedYear, int bookQuantity, String bookDescription, String bookImageLink
+                ) {
         this.bookTitle = bookTitle;
         this.bookPublishedYear = bookPublishedYear;
         this.bookQuantity = bookQuantity;
         this.bookDescription = bookDescription;
         this.bookImageLink = bookImageLink;
-        this.bookCreatedDate = bookCreatedDate;
     }
 
 }

@@ -1,6 +1,5 @@
 package com.app.library.dto;
 
-import com.app.library.model.role.RoleName;
 import lombok.*;
 
 import java.io.Serializable;
@@ -18,6 +17,5 @@ public class UserDto implements Serializable {
     String fullName;
     String address;
     String mobile;
-    RoleName group;
     String email;
 }

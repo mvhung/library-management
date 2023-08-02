@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import java.util.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
 @Data
 
 @AllArgsConstructor
@@ -24,6 +28,12 @@ public class Author {
 
     @Column(name = "au_image")
     private String authorImageUrl;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "authors", cascade = CascadeType.ALL)

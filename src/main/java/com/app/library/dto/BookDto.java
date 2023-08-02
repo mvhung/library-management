@@ -25,11 +25,7 @@ public class BookDto implements Serializable {
     String bookImageLink;
 
     List<Author> authors;
-//    List<String> authorNames;
     Category category;
     Publisher publisher;
-//    public List<String> authorNames(List<Author> authors) {
-//        List<String> getAuthors = new ArrayList<>();
-//        getAuthors.add(authors)
-//    }
+
 }

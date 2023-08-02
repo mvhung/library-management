@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,15 +29,20 @@ public class Category {
     @Column(name = "ca_description")
     private String categoryDescription;
 
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
     @JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Book> books;
 
     public void removeBook(Book book) {
-        // Kiểm tra xem cuốn sách có tồn tại trong list books của danh muc hay không
         if (books.contains(book)) {
             books.remove(book);
-            book.setCategory(null); // set category thành null để gỡ bỏ liên kết
+            book.setCategory(null);
         }
     }
 

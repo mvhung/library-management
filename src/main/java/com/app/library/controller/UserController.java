@@ -20,10 +20,7 @@ public class UserController {
         return userService.getUser(id);
     }
 
-    @RequestMapping(value = "signup",method = RequestMethod.POST)
-    public ResponseEntity<?> signUp(@RequestBody UserDto user){
-        return userService.signUp(user);
-    }
+
 
     @RequestMapping(value = "update/{id}",method = RequestMethod.PUT)
     public ResponseEntity<?> signUp(@PathVariable int id,@RequestBody UserDto user){

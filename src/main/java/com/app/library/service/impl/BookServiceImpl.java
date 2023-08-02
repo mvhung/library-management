@@ -139,7 +139,6 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
             } else {
               dto.setCategory(existingCategory.get());
             }
-
         }
     }
 

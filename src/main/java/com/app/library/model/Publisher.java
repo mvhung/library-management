@@ -3,7 +3,12 @@ package com.app.library.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -31,6 +36,17 @@ public class Publisher {
 	@Column(name = "pu_image")
 	private String publisherImageUrl;
 
+	@CreatedDate
+	private LocalDateTime createdAt;
+
+	@LastModifiedDate
+	private LocalDateTime updatedAt;
+
+	@CreatedBy
+	private Long createdBy;
+
+	@LastModifiedBy
+	private Long updatedBy;
 	@JsonIgnore
 	@OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL)
 	private List<Book> books;

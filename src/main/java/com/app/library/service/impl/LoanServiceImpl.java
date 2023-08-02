@@ -53,8 +53,7 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
         Book oldBook = loan1.getBook();
 
         // Update loan properties
-        loan1.setLoanNoOfDate(newLoan.getLoanNoOfDate());
-        loan1.setLoanCreateDate(newLoan.getLoanCreateDate());
+        loan1.setLoanDueDate(newLoan.getLoanDueDate());
 
         // Update user and book references
         ResponseEntity<?> userResponse = userService.getUser(newUser.getUserId());

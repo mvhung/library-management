@@ -7,8 +7,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface IUserService {
-    public ResponseEntity<?> signUp(UserDto user);
-
     public ResponseEntity<?> updateUser(int Id, UserDto userUpdate);
     public ResponseEntity<?> deleteUser(int Id);
 

@@ -2,6 +2,10 @@ package com.app.library.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -16,11 +20,14 @@ public class Loan {
     @Column(name = "lo_id")
     private int loanId;
 
-    @Column(name = "lo_no_of_date", nullable = false)
-    private int loanNoOfDate;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-    @Column(name = "lo_create_date", nullable = false)
-    private Date loanCreateDate;
+    @CreatedBy
+    private Long createdBy;
+
+    @Column(name = "lo_due_date")
+    private LocalDateTime loanDueDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "us_id")
@@ -29,5 +36,7 @@ public class Loan {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bo_id")
     private Book book;
+
+
 
 }

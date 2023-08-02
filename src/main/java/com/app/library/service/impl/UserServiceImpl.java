@@ -4,30 +4,22 @@ import com.app.library.dto.UserDto;
 import com.app.library.exception.object.ObjectException;
 import com.app.library.model.User;
 import com.app.library.repository.UserRepository;
+import com.app.library.service.IUserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Service
-public class UserServiceImpl implements com.app.library.service.IUserService {
+public class UserServiceImpl implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Override
-    public ResponseEntity<?> signUp(UserDto newUser) {
-        User user = new User();
 
-        BeanUtils.copyProperties(newUser, user);
-
-        addUser(user);
-
-        return new ResponseEntity<>(newUser,HttpStatus.OK);
-    }
 
     public User addUser(User user) {
         String newEmail = user.getEmail();
@@ -39,6 +31,9 @@ public class UserServiceImpl implements com.app.library.service.IUserService {
             throw new ObjectException("user is existed");
         }
     }
+
+
+
 
     @Override
     public ResponseEntity<?> updateUser(int id, UserDto userUpdate) {
@@ -60,16 +55,14 @@ public class UserServiceImpl implements com.app.library.service.IUserService {
         }
         try {
             User user = userExisted.get();
-            user.setFullName(userUpdate.getFullName());
+            user.setFirstName(userUpdate.getFirstName());
+            user.setLastName(user.getLastName());
             user.setAddress(userUpdate.getAddress());
-            user.setCreateDate(userUpdate.getCreateDate());
             user.setEmail(userUpdate.getEmail());
             user.setGroup(userUpdate.getGroup());
-            user.setStatus(userUpdate.getStatus());
-            user.setMobile(userUpdate.getMobile());
+            user.setRoleName(userUpdate.getRoleName());
             user.setPassword(userUpdate.getPassword());
-            user.setUsername(userUpdate.getUsername());
-            user.setUpdatePassword(userUpdate.getUpdatePassword());
+
             return userRepository.save(user);
         }catch (Exception e){
             throw new ObjectException("can't update user id:" + id);
