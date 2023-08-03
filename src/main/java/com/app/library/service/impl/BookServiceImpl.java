@@ -265,8 +265,6 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
 
     @Override
     public ResponseEntity<?> searchBook(String keyword) {
-
-
         try {
             List<Book> books = getAllBooks();
 
