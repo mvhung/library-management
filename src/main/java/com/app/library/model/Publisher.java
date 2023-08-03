@@ -7,6 +7,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "publishers")
 public class Publisher {
 
@@ -43,10 +45,17 @@ public class Publisher {
 	private LocalDateTime updatedAt;
 
 	@CreatedBy
-	private Long createdBy;
+	@Column(name = "created_by")
+	private String createdBy;
 
 	@LastModifiedBy
-	private Long updatedBy;
+	@Column(name = "updated_by")
+	private String updatedBy;
+	@PrePersist
+	public void prePersist() {
+		createdAt = LocalDateTime.now();
+	}
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL)
 	private List<Book> books;

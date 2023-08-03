@@ -4,8 +4,12 @@ import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import java.util.*;
+
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 @Data
@@ -13,6 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "authors")
 public class Author {
     @Id
@@ -35,6 +40,17 @@ public class Author {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @CreatedBy
+    @Column(name = "created_by")
+    private String createdBy;
+
+    @LastModifiedBy
+    @Column(name = "updated_by")
+    private String updatedBy;
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+    }
     @JsonIgnore
     @ManyToMany(mappedBy = "authors", cascade = CascadeType.ALL)
     private List<Book> books;

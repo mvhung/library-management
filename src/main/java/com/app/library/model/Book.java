@@ -11,12 +11,14 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Data
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "books")
 public class Book {
     @Id
@@ -46,9 +48,12 @@ public class Book {
     private LocalDateTime updatedAt;
 
     @CreatedBy
-    private Long createdBy;
+    @Column(name = "created_by")
+    private String createdBy;
+
     @LastModifiedBy
-    private Long updatedBy;
+    @Column(name = "updated_by")
+    private String updatedBy;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ca_id")
@@ -63,7 +68,10 @@ public class Book {
     @JoinTable(name = "book_author", joinColumns = @JoinColumn(name = "bo_id", referencedColumnName = "bo_id"), inverseJoinColumns = @JoinColumn(name = "au_id", referencedColumnName = "au_id"))
     private List<Author> authors;
 
-
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+    }
 
     public Book(String bookTitle, int bookPublishedYear, int bookQuantity, String bookDescription, String bookImageLink
                 ) {
