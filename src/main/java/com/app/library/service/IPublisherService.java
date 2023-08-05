@@ -1,14 +1,16 @@
 package com.app.library.service;
 
 import com.app.library.dto.PublisherDto;
+import com.app.library.model.Category;
 import com.app.library.model.Publisher;
+import com.app.library.payload.PagedResponse;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface IPublisherService {
     public ResponseEntity<?> getPublisher(int id);
-    public List<Publisher> getAllPublisher();
+    public PagedResponse<Publisher> getAllPublishers(int page, int size);
     public Publisher updatePublisher(int id, PublisherDto dto);
 
 }

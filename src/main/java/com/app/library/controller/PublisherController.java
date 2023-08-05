@@ -1,9 +1,12 @@
 package com.app.library.controller;
 
 import com.app.library.dto.PublisherDto;
+import com.app.library.model.Category;
 import com.app.library.model.Publisher;
+import com.app.library.payload.PagedResponse;
 import com.app.library.service.impl.MapValidationErrorService;
 import com.app.library.service.impl.PublisherServiceImpl;
+import com.app.library.utils.AppConstants;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,10 +28,11 @@ public class PublisherController {
         ResponseEntity<?> responseEntity = publisherServiceImpl.getPublisher(id);
         return new ResponseEntity<>(responseEntity, HttpStatus.OK);
     }
-    @RequestMapping
-    public ResponseEntity<List<Publisher>> getAllPublisher() {
-        List<Publisher> publishers =  publisherServiceImpl.getAllPublisher();
-        return new ResponseEntity<>(publishers,HttpStatus.OK);
+    @GetMapping
+    public PagedResponse<Publisher> getAllPublishers(
+            @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
+            @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
+        return publisherServiceImpl.getAllPublishers(page, size);
     }
     @PatchMapping("{id}")
     public ResponseEntity<?> updatePublisher(@Valid @PathVariable(name="id") int id,

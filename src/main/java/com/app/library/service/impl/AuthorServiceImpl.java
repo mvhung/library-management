@@ -1,11 +1,19 @@
 package com.app.library.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.app.library.model.Publisher;
+import com.app.library.payload.PagedResponse;
+import com.app.library.utils.AppUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,10 +41,17 @@ public class AuthorServiceImpl implements IAuthorService {
     }
 
     @Override
-    public ResponseEntity<List<String>> listAuthorNames() {
-        List<Author> authors = authorRepository.findAll();
-        List<String> names = authors.stream().map(Author::getAuthorFullName).collect(Collectors.toList());
-        return new ResponseEntity<>(names, HttpStatus.OK);
+    public PagedResponse<Author> getAllAuthors(int page, int size) {
+        AppUtils.validatePageNumberAndSize(page, size);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+        Page<Author> authors = authorRepository.findAll(pageable);
+
+        List<Author> content = authors.getNumberOfElements() == 0 ? Collections.emptyList() : authors.getContent();
+
+        return new PagedResponse<>(content, authors.getNumber(), authors.getSize(), authors.getTotalElements(),
+                authors.getTotalPages(), authors.isLast());
     }
 
     @Override

@@ -37,6 +37,9 @@ public class User implements UserDetails {
     @Column(name = "us_lastName", nullable = false)
     private String lastName;
 
+    @Column(name = "us_username", nullable = false)
+    private String username;
+
     @Column(name = "us_password", nullable = false)
     private String password;
     @Column(name = "us_address")
@@ -64,7 +67,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(roleName.name()));
+        return roleName.getAuthorities();
     }
     @PrePersist
     public void prePersist() {

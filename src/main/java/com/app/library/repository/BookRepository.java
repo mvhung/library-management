@@ -1,5 +1,7 @@
 package com.app.library.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.app.library.model.Book;
@@ -19,4 +21,6 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     @Query("SELECT DISTINCT b FROM Book b JOIN b.authors a WHERE LOWER(a.authorFullName) = LOWER(:authorFullName)")
     List<Book> findBooksByAuthorNameIgnoreCase(@Param("authorFullName") String authorFullName);
+
+    Page<Book> findByCreatedBy(int id, Pageable pageable);
 }

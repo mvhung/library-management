@@ -3,14 +3,21 @@ package com.app.library.service.impl;
 import com.app.library.dto.CategoryDto;
 import com.app.library.exception.object.ObjectException;
 import com.app.library.model.Category;
+import com.app.library.payload.PagedResponse;
 import com.app.library.repository.CategoryRepository;
 import com.app.library.service.ICategoryService;
+import com.app.library.utils.AppUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,10 +33,19 @@ public class CategoryServiceImpl implements ICategoryService {
     private CategoryRepository categoryRepository;
 
     @Override
-    public ResponseEntity<?> getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
-        return new ResponseEntity<List<Category>>(categories, HttpStatus.OK);
+    public PagedResponse<Category> getAllCategories(int page, int size) {
+        AppUtils.validatePageNumberAndSize(page, size);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+        Page<Category> categories = categoryRepository.findAll(pageable);
+
+        List<Category> content = categories.getNumberOfElements() == 0 ? Collections.emptyList() : categories.getContent();
+
+        return new PagedResponse<>(content, categories.getNumber(), categories.getSize(), categories.getTotalElements(),
+                categories.getTotalPages(), categories.isLast());
     }
+
 
     @Override
     public ResponseEntity<?> getCategory(int id) {
@@ -97,9 +113,7 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     public ResponseEntity<?> searchCategory(String keyword) {
         try {
-            ResponseEntity<List<Category>> categoriesResponse = (ResponseEntity<List<Category>>) getAllCategories();
-            List<Category> categories = categoriesResponse.getBody();
-            //            List<Category> categories = categoryRepository.findAll();
+            List<Category> categories = categoryRepository.findAll();
             List<Category> results =  categories.stream()
                     .filter(category -> category.getCategoryName().toLowerCase().contains(keyword.toLowerCase()))
                     .collect(Collectors.toList());

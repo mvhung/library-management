@@ -1,8 +1,11 @@
 package com.app.library.controller;
 
 import com.app.library.dto.CategoryDto;
+import com.app.library.model.Category;
+import com.app.library.payload.PagedResponse;
 import com.app.library.service.impl.CategoryServiceImpl;
 import com.app.library.service.impl.MapValidationErrorService;
+import com.app.library.utils.AppConstants;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +29,10 @@ public class CategoryController {
         return categoryServiceImpl.createCategory(dto);
     }
     @GetMapping
-    public ResponseEntity<?> getCategories() {
-        return categoryServiceImpl.getAllCategories();
+    public PagedResponse<Category> getAllCategories(
+            @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
+            @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
+        return categoryServiceImpl.getAllCategories(page, size);
     }
 
     @GetMapping("/search")

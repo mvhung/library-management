@@ -4,19 +4,24 @@ import com.app.library.exception.object.ObjectException;
 import com.app.library.model.Author;
 import com.app.library.model.Category;
 import com.app.library.model.Publisher;
+import com.app.library.payload.PagedResponse;
 import com.app.library.repository.AuthorRepository;
 import com.app.library.repository.CategoryRepository;
 import com.app.library.repository.PublisherRepository;
+import com.app.library.utils.AppUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import com.app.library.model.Book;
 import com.app.library.repository.BookRepository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -48,14 +53,47 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
     }
 
     @Override
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public PagedResponse<Book> getAllBooks(int page, int size) {
+        AppUtils.validatePageNumberAndSize(page, size);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+        Page<Book> books = bookRepository.findAll(pageable);
+
+        List<Book> content = books.getNumberOfElements() == 0 ? Collections.emptyList() :books.getContent();
+
+        return new PagedResponse<>(content, books.getNumber(), books.getSize(), books.getTotalElements(),
+                books.getTotalPages(), books.isLast());
     }
 
     @Override
-    public List<Book> getBooksByCategoryName(String categoryName) {
+    public PagedResponse<Book> getBooksByCategoryName(String categoryName, int page, int size) {
         try {
-            return bookRepository.findByCategoryName(categoryName);
+            Category category = categoryRepository.getByCategoryName(categoryName);
+
+            Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+            Page<Book> books = bookRepository.findByCreatedBy(category.getCategoryId(), pageable);
+
+            List<Book> content = books.getNumberOfElements() > 0 ? books.getContent() : Collections.emptyList();
+
+            return new PagedResponse<>(content, books.getNumber(), books.getSize(), books.getTotalElements(), books.getTotalPages(), books.isLast());
+        }catch (Exception e) {
+            throw  new ObjectException("No get detail books");
+        }
+    }
+    @Override
+    public PagedResponse<Book> getBooksByPublisherName(String publisherName, int page, int size) {
+        try {
+            Publisher publisher = publisherRepository.getByPublisherName(publisherName);
+
+            Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+            Page<Book> books = bookRepository.findByCreatedBy(publisher.getPublisherId(), pageable);
+
+            List<Book> content = books.getNumberOfElements() > 0 ? books.getContent() : Collections.emptyList();
+
+            return new PagedResponse<>(content, books.getNumber(), books.getSize(), books.getTotalElements(), books.getTotalPages(), books.isLast());
         } catch (Exception e) {
             e.printStackTrace();
             throw  new ObjectException("No get detail books");
@@ -63,19 +101,17 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
     }
 
     @Override
-    public List<Book> getBooksByPublisherName(String publisherName) {
+    public PagedResponse<Book> getBookByAuthorName(String authorFullName, int page, int size) {
         try {
-            return bookRepository.findByPublisherName(publisherName);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw  new ObjectException("No get detail books");
-        }
-    }
+            Author author = authorRepository.getByAuthorName(authorFullName);
 
-    @Override
-    public List<Book> getBookByAuthorName(String authorFullName) {
-        try {
-            return bookRepository.findBooksByAuthorNameIgnoreCase(authorFullName);
+            Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+            Page<Book> books = bookRepository.findByCreatedBy(author.getAuthorId(), pageable);
+
+            List<Book> content = books.getNumberOfElements() > 0 ? books.getContent() : Collections.emptyList();
+
+            return new PagedResponse<>(content, books.getNumber(), books.getSize(), books.getTotalElements(), books.getTotalPages(), books.isLast());
         } catch (Exception e) {
             e.printStackTrace();
             throw new ObjectException("No get detail books");
@@ -255,6 +291,11 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
         }
     }
 
+    @Override
+    public PagedResponse<Book> searchBook(String keyword, int page, int size) {
+        return null;
+    }
+
     private Book findById(int id) {
         Optional<Book> found = bookRepository.findById(id);
         if(found.isEmpty()) {
@@ -263,24 +304,24 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
         return found.get();
     }
 
-    @Override
-    public ResponseEntity<?> searchBook(String keyword) {
-        try {
-            List<Book> books = getAllBooks();
-
-            List<Book> results =  books.stream()
-                    .filter(book-> book.getBookTitle().toLowerCase().contains(keyword.toLowerCase())|| book.getCategory().getCategoryName().toLowerCase().contains(keyword.toLowerCase()))
-                    .collect(Collectors.toList());
-
-            if (results.size() == 0) {
-                return new ResponseEntity<>("No result  ", HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>(results, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ObjectException("Can't find book have " + keyword);
-        }
-    }
+//    @Override
+//    public ResponseEntity<?> searchBook(String keyword) {
+//        try {
+//            List<Book> books = bookRepository.findAll();
+//
+//            List<Book> results =  books.stream()
+//                    .filter(book-> book.getBookTitle().toLowerCase().contains(keyword.toLowerCase())|| book.getCategory().getCategoryName().toLowerCase().contains(keyword.toLowerCase()))
+//                    .collect(Collectors.toList());
+//
+//            if (results.size() == 0) {
+//                return new ResponseEntity<>("No result  ", HttpStatus.OK);
+//            }
+//
+//            return new ResponseEntity<>(results, HttpStatus.OK);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new ObjectException("Can't find book have " + keyword);
+//        }
+//    }
 
 }

@@ -2,15 +2,23 @@ package com.app.library.service.impl;
 
 import com.app.library.dto.PublisherDto;
 import com.app.library.exception.object.ObjectException;
+import com.app.library.model.Category;
 import com.app.library.model.Publisher;
+import com.app.library.payload.PagedResponse;
 import com.app.library.repository.PublisherRepository;
 import com.app.library.service.IPublisherService;
+import com.app.library.utils.AppUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,8 +38,17 @@ public class PublisherServiceImpl implements IPublisherService {
     }
 
     @Override
-    public List<Publisher> getAllPublisher() {
-        return publisherRepository.findAll();
+    public PagedResponse<Publisher> getAllPublishers(int page, int size) {
+        AppUtils.validatePageNumberAndSize(page, size);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+        Page<Publisher> publishers = publisherRepository.findAll(pageable);
+
+        List<Publisher> content = publishers.getNumberOfElements() == 0 ? Collections.emptyList() : publishers.getContent();
+
+        return new PagedResponse<>(content, publishers.getNumber(), publishers.getSize(), publishers.getTotalElements(),
+                publishers.getTotalPages(), publishers.isLast());
     }
 
     @Override
