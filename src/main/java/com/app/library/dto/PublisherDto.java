@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Value;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 
@@ -19,5 +20,5 @@ public class PublisherDto implements Serializable {
     String publisherName;
     String publisherIntroduce;
     String publisherWebsiteUrl;
-    String publisherImageUrl;
+    private MultipartFile publisherImageUrl;
 }

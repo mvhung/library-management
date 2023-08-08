@@ -1,5 +1,6 @@
 package com.app.library.service.impl;
 import com.app.library.dto.BookDto;
+import com.app.library.exception.object.LibraryException;
 import com.app.library.exception.object.ObjectException;
 import com.app.library.model.Author;
 import com.app.library.model.Category;
@@ -19,7 +20,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import com.app.library.model.Book;
 import com.app.library.repository.BookRepository;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +39,8 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
     private PublisherRepository publisherRepository;
     @Autowired
     private AuthorRepository authorRepository;
-
+    @Autowired
+    private AmazonS3Service amazonS3Service;
 
     public Book save(Book book) {
         return bookRepository.save(book);
@@ -125,7 +129,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
 
 
     @Override
-    public ResponseEntity<?> addBook(BookDto dto) {
+    public ResponseEntity<?> addBook(BookDto dto, MultipartFile bookImageLink) {
         try {
             Optional<Book> existingBook = bookRepository.findByBookTitle(dto.getBookTitle());
 
@@ -140,7 +144,16 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
 
                 checkExistAuthors(dto,bookToUpdate);
 
-                bookToUpdate = save(bookToUpdate); // Lưu cập nhật vào cơ sở dữ liệu
+                if (bookImageLink != null) {
+                    try {
+                        String bookUrl = amazonS3Service.uploadFile(bookImageLink, "books");
+                        bookToUpdate.setBookImageLink(bookUrl);
+                    } catch (IOException e) {
+                        throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update avatar");
+                    }
+                }
+
+                bookToUpdate = save(bookToUpdate);
                 return new ResponseEntity<>(bookToUpdate, HttpStatus.CREATED);
 
             }
@@ -151,6 +164,15 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
             checkExistPublisher(dto);
             checkExistAuthors(dto,newBook);
             BeanUtils.copyProperties(dto, newBook);
+
+            if (bookImageLink != null) {
+                try {
+                    String bookUrl = amazonS3Service.uploadFile(bookImageLink, "books");
+                    newBook.setBookImageLink(bookUrl);
+                } catch (IOException e) {
+                    throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update avatar");
+                }
+            }
             newBook = save(newBook);
             dto.setBookId(newBook.getBookId());
 
@@ -205,62 +227,45 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
             }
         }
     }
-
-
     @Override
-    public ResponseEntity<?> updateBook(int id, BookDto dto) {
-        Book book = new Book();
-        BeanUtils.copyProperties(dto, book);
-
-        book = update(id, book);
-
-        //cập nhật lại id của CategoryDto và trả lại  cho client
-        dto.setBookId(book.getBookId());
-
-
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
-    }
-
-    private Book update(int id, Book book) {
-        Optional<Book> existed = bookRepository.findById(id);
-        if(existed.isEmpty()) {
-            throw new ObjectException("Book is " + id + " does't exist");
-        }
-
+    public ResponseEntity<?> updateBook(int id, BookDto dto, MultipartFile bookImageLink) {
         try {
-            Book existedBook= existed.get();
+            Optional<Book> existingBook = bookRepository.findById(id);
 
-            // Cập nhật các field chỉ khi chúng không rỗng hoặc khác giá trị mặc định
-            if (book.getBookTitle() != null && !book.getBookTitle().isEmpty()) {
-                existedBook.setBookTitle(book.getBookTitle());
+            if (existingBook.isPresent()) {
+                Book bookToUpdate = existingBook.get();
+
+                // Cập nhật các thông tin từ dto
+                bookToUpdate.setBookTitle(dto.getBookTitle());
+                bookToUpdate.setBookQuantity(dto.getBookQuantity());
+                bookToUpdate.setBookDescription(dto.getBookDescription());
+                bookToUpdate.setBookPublishedYear(dto.getBookPublishedYear());
+                // Cập nhật các thông tin liên quan khác từ dto
+                checkExistCategory(dto);
+                checkExistPublisher(dto);
+                checkExistAuthors(dto, bookToUpdate);
+
+                if (bookImageLink != null) {
+                    try {
+                        String bookUrl = amazonS3Service.uploadFile(bookImageLink, "books");
+                        bookToUpdate.setBookImageLink(bookUrl);
+                    } catch (IOException e) {
+                        throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
+                    }
+                }
+
+                bookToUpdate = save(bookToUpdate);
+                return new ResponseEntity<>(bookToUpdate, HttpStatus.OK);
+            } else {
+                throw new ObjectException("Book not found");
             }
-            if (book.getBookDescription() != null && !book.getBookDescription().isEmpty()) {
-                existedBook.setBookDescription(book.getBookDescription());
-            }
-            if (book.getBookImageLink() != null && !book.getBookImageLink().isEmpty()) {
-                existedBook.setBookImageLink(book.getBookImageLink());
-            }
-            if (book.getBookPublishedYear() != 0) {
-                existedBook.setBookPublishedYear(book.getBookPublishedYear());
-            }
-            if (book.getBookQuantity() != 0) {
-                existedBook.setBookQuantity(book.getBookQuantity());
-            }
-            if (book.getCategory() != null) {
-                existedBook.setCategory(book.getCategory());
-            }
-            if (book.getPublisher() != null) {
-                existedBook.setPublisher(book.getPublisher());
-            }
-            if (book.getAuthors() != null) {
-                existedBook.setAuthors(book.getAuthors());
-            }
-            return bookRepository.save(existedBook);
+
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ObjectException("Book is updated failed ");
+            throw new ObjectException("Book update failed");
         }
     }
+
 
     @Override
     public ResponseEntity<?> deleteBook(int id) {

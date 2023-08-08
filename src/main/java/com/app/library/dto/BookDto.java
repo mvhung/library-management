@@ -6,6 +6,7 @@ import com.app.library.model.Category;
 import com.app.library.model.Publisher;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.util.List;
@@ -22,7 +23,7 @@ public class BookDto implements Serializable {
     int bookPublishedYear;
     int bookQuantity;
     String bookDescription;
-    String bookImageLink;
+    private MultipartFile bookImageLink;
 
     List<Author> authors;
     Category category;

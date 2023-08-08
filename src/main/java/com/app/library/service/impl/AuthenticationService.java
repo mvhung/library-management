@@ -1,5 +1,6 @@
 package com.app.library.service.impl;
-
+import com.app.library.exception.object.LibraryException;
+import com.app.library.service.impl.AmazonS3Service;
 import com.app.library.auth.AuthenticationRequest;
 import com.app.library.auth.AuthenticationResponse;
 import com.app.library.auth.RegisterRequest;
@@ -14,11 +15,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -31,9 +35,10 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final TokenRepository tokenRepository;
+    @Autowired
+    private  final AmazonS3Service amazonS3Service;
 
-
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponse register(RegisterRequest request, MultipartFile avatarFile) {
         Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
         if (existingUser.isPresent()) {
             throw new EmailAlreadyExistsException("Email is already registered");
@@ -47,11 +52,24 @@ public class AuthenticationService {
                 .roleName(request.getRoleName())
                 .build();
 
+        if (avatarFile != null) {
+            try {
+                String avatarUrl = amazonS3Service.uploadFile(avatarFile, "avatars");
+                user.setAvatarUrl(avatarUrl);
+
+            } catch (IOException e) {
+                throw new LibraryException(HttpStatus.BAD_REQUEST,"No add avatar");
+            }
+        }
         var savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
-        return AuthenticationResponse.builder().token(jwtToken).refreshToken(refreshToken).build();
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .refreshToken(refreshToken)
+                .avatarUrl(user.getAvatarUrl())
+                .build();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {

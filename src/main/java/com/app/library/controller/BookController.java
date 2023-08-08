@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.app.library.model.Book;
 import com.app.library.service.impl.BookServiceImpl;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -36,27 +37,23 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addBook(@Valid @RequestBody BookDto dto,
-                                        BindingResult result) {
-        ResponseEntity<?> responseEntity =  mapValidationErrorService.mapValidationFields(result);
-        if(responseEntity != null) {
+    public ResponseEntity<?> addBook(@Valid @ModelAttribute BookDto dto,
+                                     @RequestParam(value = "bookImageLink", required = false) MultipartFile bookImageLink,
+                                     BindingResult result) {
+        ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationFields(result);
+        if (responseEntity != null) {
             return responseEntity;
         }
-        return bookServiceImpl.addBook(dto);
+        return bookServiceImpl.addBook(dto, bookImageLink);
     }
+
     @GetMapping
     public PagedResponse<Book> getAllBooks(
             @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
             @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
         return bookServiceImpl.getAllBooks(page, size);
     }
-    @GetMapping("/pages")
-    public ResponseEntity<?> getBooks(
-            @PageableDefault(size = 5, sort ="bookTitle", direction = Sort.Direction.ASC)
-            Pageable pageable){
-        Page<Book> bookPage =  bookServiceImpl.findAll(pageable);
-        return new ResponseEntity<>(bookPage, HttpStatus.OK);
-    }
+
 
     @GetMapping("/publisher/{publisherName}")
     public  PagedResponse<Book> getBooksByPublisherName(
@@ -75,16 +72,18 @@ public class BookController {
 //    public ResponseEntity<?> searchBooks(@RequestParam("keyword") String keyword) {
 //        return bookServiceImpl.searchBook(keyword);
 //    }
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateBook(
             @Valid @PathVariable(name="id") int id,
-            @RequestBody BookDto dto , BindingResult result) {
+            @Valid @ModelAttribute BookDto dto ,
+            @RequestParam(value = "bookImageLink", required = false) MultipartFile bookImageLink,
+            BindingResult result) {
 
         ResponseEntity<?> responseEntity =  mapValidationErrorService.mapValidationFields(result);
         if(responseEntity != null) {
             return responseEntity;
         }
-        return bookServiceImpl.updateBook(id,dto);
+        return bookServiceImpl.updateBook(id,dto,bookImageLink);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable(name="id") int id) {

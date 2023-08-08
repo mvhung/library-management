@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -34,14 +35,16 @@ public class PublisherController {
             @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
         return publisherServiceImpl.getAllPublishers(page, size);
     }
-    @PatchMapping("{id}")
+    @PutMapping("{id}")
     public ResponseEntity<?> updatePublisher(@Valid @PathVariable(name="id") int id,
-                                             @RequestBody PublisherDto dto , BindingResult result){
+                                             @Valid @ModelAttribute PublisherDto dto ,
+                                             @RequestParam(value = "publisherImageUrl", required = false) MultipartFile publisherImageUrl,
+                                             BindingResult result){
         ResponseEntity<?> responseEntity =  mapValidationErrorService.mapValidationFields(result);
         if(responseEntity != null) {
             return responseEntity;
         }
-        Publisher updated = publisherServiceImpl.updatePublisher(id,dto);
+        Publisher updated = publisherServiceImpl.updatePublisher(id,dto,publisherImageUrl);
         return new ResponseEntity<>(updated,HttpStatus.CREATED);
     }
 }

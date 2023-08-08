@@ -1,6 +1,7 @@
 package com.app.library.model;
 
 import com.app.library.model.enum_class.RoleName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -49,11 +50,12 @@ public class User implements UserDetails {
     @Column(name = "us_role")
     private RoleName roleName;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
-    @Column(name = "us_group")
-    private int group;
+    @Column(name = "us_avatar")
+    private String avatarUrl;
     @Column(name = "us_email", nullable = false)
     private String email;
 
@@ -101,5 +103,14 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        if (authorities != null && !authorities.isEmpty()) {
+            GrantedAuthority authority = authorities.iterator().next();
+            roleName = RoleName.valueOf(authority.getAuthority());
+        } else {
+            roleName = RoleName.USER;
+        }
     }
 }

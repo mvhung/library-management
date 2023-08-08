@@ -11,7 +11,6 @@ import java.util.Map;
 
 @Service
 public class MapValidationErrorService {
-//    service này sẽ kiểm tra dư liệu
     public ResponseEntity<?> mapValidationFields(BindingResult result){
         if(result.hasErrors()) {
             Map<String, String> errorMap = new HashMap<>();
@@ -19,8 +18,6 @@ public class MapValidationErrorService {
             for(FieldError error: result.getFieldErrors()) {
                 errorMap.put(error.getField(), error.getDefaultMessage());
             }
-//             với HTTP status code là 400 Bad Request
-//              ResponseEntity trả về errorMap làm response body
             return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
         }
         return null;

@@ -20,4 +20,8 @@ public class CategoryDto implements Serializable {
 
     public CategoryDto(String categoryName) {
     }
+
+    public CategoryDto() {
+
+    }
 }

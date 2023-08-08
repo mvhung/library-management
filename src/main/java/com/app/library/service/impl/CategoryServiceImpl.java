@@ -1,10 +1,15 @@
 package com.app.library.service.impl;
 
 import com.app.library.dto.CategoryDto;
+import com.app.library.exception.object.LibraryException;
 import com.app.library.exception.object.ObjectException;
+import com.app.library.exception.object.ResourceNotFoundException;
 import com.app.library.model.Category;
+import com.app.library.model.User;
+import com.app.library.model.enum_class.RoleName;
 import com.app.library.payload.PagedResponse;
 import com.app.library.repository.CategoryRepository;
+import com.app.library.repository.UserRepository;
 import com.app.library.service.ICategoryService;
 import com.app.library.utils.AppUtils;
 import org.springframework.beans.BeanUtils;
@@ -15,8 +20,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -24,13 +31,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements ICategoryService {
-//    save thong tin cua entity duoc truyen vao
     public Category save(Category category) {
         return categoryRepository.save(category);
     }
 
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public PagedResponse<Category> getAllCategories(int page, int size) {
@@ -56,6 +64,7 @@ public class CategoryServiceImpl implements ICategoryService {
             throw new ObjectException("No get detail category" );
         }
     }
+
     @Override
     public ResponseEntity<?> createCategory(CategoryDto dto) {
         Category category = new Category();
@@ -68,35 +77,26 @@ public class CategoryServiceImpl implements ICategoryService {
         dto.setCategoryId(category.getCategoryId());
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
-
     @Override
-    public ResponseEntity<?> updateCategory(int id, CategoryDto dto) {
-        Category category = new Category();
-
-        //copy data từ CategoryDto sang CategoryEntity
-        BeanUtils.copyProperties(dto, category);
-
-        category = update(id, category);
-
-        //cập nhật lại id của CategoryDto và trả lại CategoryDto cho client
-        dto.setCategoryId(category.getCategoryId());
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
-    }
-    public Category update(int id, Category category) {
-
-        Optional<Category> existed = categoryRepository.findById(id);
-        if(existed.isEmpty()) {
-            throw new ObjectException("Category id " + id + " does't exist");
-        }
-
+    public Category updateCategory(int id, CategoryDto dto) {
         try {
-            Category existedCategory = existed.get();
-            existedCategory.setCategoryName(category.getCategoryName());
-            existedCategory.setCategoryDescription(category.getCategoryDescription());
+            Optional<Category> existingCategory = categoryRepository.findById(id);
 
-            return categoryRepository.save(existedCategory);
+            if (existingCategory.isPresent()) {
+                Category categoryToUpdate = existingCategory.get();
+
+                // Cập nhật các thông tin từ dto
+                categoryToUpdate.setCategoryName(dto.getCategoryName());
+                categoryToUpdate.setCategoryDescription(dto.getCategoryDescription());
+                categoryToUpdate = save(categoryToUpdate);
+                return categoryToUpdate;
+            } else {
+                throw new ObjectException("Category not found");
+            }
+
         } catch (Exception e) {
-            throw new ObjectException("Category is updated failed ");
+            e.printStackTrace();
+            throw new ObjectException("Category update failed");
         }
     }
     @Override

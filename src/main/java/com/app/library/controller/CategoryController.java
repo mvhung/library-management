@@ -1,14 +1,19 @@
 package com.app.library.controller;
 
+import com.app.library.config.CurrentUser;
 import com.app.library.dto.CategoryDto;
 import com.app.library.model.Category;
+import com.app.library.model.User;
 import com.app.library.payload.PagedResponse;
 import com.app.library.service.impl.CategoryServiceImpl;
 import com.app.library.service.impl.MapValidationErrorService;
 import com.app.library.utils.AppConstants;
 import jakarta.validation.Valid;
+import org.hibernate.validator.constraints.Currency;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +25,7 @@ public class CategoryController {
     @Autowired
     MapValidationErrorService mapValidationErrorService;
     @PostMapping
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryDto dto,
                                             BindingResult result){
         ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationFields(result);
@@ -44,16 +50,18 @@ public class CategoryController {
         return categoryServiceImpl.getCategory(id);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateCategory(
             @Valid  @PathVariable("id") int id,
-            @RequestBody CategoryDto dto,
+            @Valid  @RequestBody CategoryDto dto,
             BindingResult result) {
         ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationFields(result);
         if(responseEntity != null) {
             return responseEntity;
         }
-        return categoryServiceImpl.updateCategory(id,dto);
+        Category updated = categoryServiceImpl.updateCategory(id,dto);
+        return new ResponseEntity<>(updated, HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable("id") int id) {

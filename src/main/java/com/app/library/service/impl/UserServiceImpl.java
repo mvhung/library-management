@@ -1,7 +1,8 @@
 package com.app.library.service.impl;
 
+import com.app.library.auth.RegisterRequest;
 import com.app.library.dto.UserDto;
-import com.app.library.exception.object.ObjectException;
+import com.app.library.exception.object.*;
 import com.app.library.model.User;
 import com.app.library.repository.UserRepository;
 import com.app.library.service.IUserService;
@@ -9,64 +10,48 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Optional;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
+
 @Service
 public class UserServiceImpl implements IUserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AmazonS3Service amazonS3Service;
+    @Autowired
+    private  PasswordEncoder passwordEncoder;
 
-
-
-    public User addUser(User user) {
-        String newEmail = user.getEmail();
-        Optional<User> userEmailExisted = userRepository.findByEmail(newEmail);
-        if (!userEmailExisted.isPresent()) {
-            return userRepository.save(user);
+    public ResponseEntity<User> updateUser(int id, RegisterRequest updateUserRequest, MultipartFile avatarFile) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (!userOptional.isPresent()) {
+            throw new UserNotFoundException("User not found with ID: " + id);
         }
-        else{
-            throw new ObjectException("user is existed");
+
+        User existingUser = userOptional.get();
+        existingUser.setFirstName(updateUserRequest.getFirstName());
+        existingUser.setLastName(updateUserRequest.getLastName());
+        existingUser.setUsername(updateUserRequest.getUsername());
+        existingUser.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
+        existingUser.setEmail(updateUserRequest.getEmail());
+        if (avatarFile != null) {
+            try {
+                String avatarUrl = amazonS3Service.uploadFile(avatarFile, "avatars");
+                existingUser.setAvatarUrl(avatarUrl);
+            } catch (IOException e) {
+                throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update avatar");
+            }
         }
-    }
 
+        // Cập nhật các trường thông tin khác theo updateUserRequest
 
-
-
-    @Override
-    public ResponseEntity<?> updateUser(int id, UserDto userUpdate) {
-        User user = new User();
-
-        BeanUtils.copyProperties(userUpdate, user);
-
-        updateUserInfor(id, user);
-
-        user.setUserId(id);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
-
-    }
-
-    public User updateUserInfor(int id,User userUpdate){
-        Optional<User> userExisted = userRepository.findById(id);
-        if(userExisted.isEmpty()) {
-            throw new ObjectException("User id " + id + " does't exist");
-        }
-        try {
-            User user = userExisted.get();
-            user.setFirstName(userUpdate.getFirstName());
-            user.setLastName(user.getLastName());
-            user.setAddress(userUpdate.getAddress());
-            user.setEmail(userUpdate.getEmail());
-            user.setGroup(userUpdate.getGroup());
-            user.setRoleName(userUpdate.getRoleName());
-            user.setPassword(userUpdate.getPassword());
-
-            return userRepository.save(user);
-        }catch (Exception e){
-            throw new ObjectException("can't update user id:" + id);
-        }
+        userRepository.save(existingUser);
+        return new ResponseEntity<>(existingUser,HttpStatus.OK);
     }
 
     @Override
@@ -83,15 +68,14 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ResponseEntity<?> getUser(int Id) {
-        Optional<User> user = userRepository.findById(Id);
-//        UserDto userDto;
-        if(user.isPresent()){
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(new User(), HttpStatus.OK);
+        try {
+            User user = userRepository.findById(Id).orElseThrow();
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(user, userDto);
+            return new ResponseEntity<>(userDto, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new UserNotFoundException("No get detail user");
         }
-
-
     }
 
     @Override

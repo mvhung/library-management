@@ -1,10 +1,12 @@
 package com.app.library.service.impl;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.app.library.exception.object.LibraryException;
 import com.app.library.model.Publisher;
 import com.app.library.payload.PagedResponse;
 import com.app.library.utils.AppUtils;
@@ -23,11 +25,14 @@ import com.app.library.exception.object.ObjectException;
 import com.app.library.model.Author;
 import com.app.library.repository.AuthorRepository;
 import com.app.library.service.IAuthorService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class AuthorServiceImpl implements IAuthorService {
     @Autowired
     private AuthorRepository authorRepository;
+    @Autowired
+    private AmazonS3Service amazonS3Service;
 
     public Author save(Author author) {
         return authorRepository.save(author);
@@ -55,25 +60,29 @@ public class AuthorServiceImpl implements IAuthorService {
     }
 
     @Override
-    public ResponseEntity<?> updateAuthor(AuthorDto dto) {
+    public Author updateAuthor(int id, AuthorDto dto, MultipartFile authorImageUrl) {
         try {
-            Optional<Author> existAuthor = authorRepository.findById(dto.getAuthorId());
+            Optional<Author> existAuthor = authorRepository.findById(id);
 
             if (existAuthor.isPresent()) {
                 Author authorUpdate = existAuthor.get();
                 authorUpdate.setAuthorFullName(authorUpdate.getAuthorFullName() + dto.getAuthorFullName());
                 authorUpdate.setAuthorIntroduce(authorUpdate.getAuthorIntroduce() + dto.getAuthorIntroduce());
                 authorUpdate.setAuthorImageUrl(authorUpdate.getAuthorImageUrl() + dto.getAuthorImageUrl());
-                authorUpdate = save(authorUpdate); // Lưu cập nhật vào cơ sở dữ liệu
-                BeanUtils.copyProperties(authorUpdate, dto);
-                return new ResponseEntity<>(dto, HttpStatus.CREATED);
-            }
 
-            Author newAuthor = new Author();
-            BeanUtils.copyProperties(dto, newAuthor);
-            newAuthor = save(newAuthor);
-            dto.setAuthorId(newAuthor.getAuthorId());
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+                if (authorImageUrl != null) {
+                    try {
+                        String imageUrl = amazonS3Service.uploadFile(authorImageUrl, "authors");
+                        authorUpdate.setAuthorImageUrl(imageUrl);
+                    } catch (IOException e) {
+                        throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
+                    }
+                }
+                authorUpdate = save(authorUpdate);
+                return authorUpdate;
+            } else {
+                throw new ObjectException("Author not found");
+            }
         } catch (Exception e) {
             // Log thông tin lỗi
             e.printStackTrace();
