@@ -105,12 +105,5 @@ public class User implements UserDetails {
         return true;
     }
 
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        if (authorities != null && !authorities.isEmpty()) {
-            GrantedAuthority authority = authorities.iterator().next();
-            roleName = RoleName.valueOf(authority.getAuthority());
-        } else {
-            roleName = RoleName.USER;
-        }
-    }
+
 }

@@ -40,10 +40,8 @@ public class SecurityConfiguration {
         return http.
                csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET,"/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/**").permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/api/v1/user/**").hasAnyAuthority("USER_PERMISSION")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

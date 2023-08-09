@@ -1,5 +1,6 @@
 package com.app.library.service.impl;
 import com.app.library.dto.BookDto;
+import com.app.library.exception.object.ForbiddenException;
 import com.app.library.exception.object.LibraryException;
 import com.app.library.exception.object.ObjectException;
 import com.app.library.model.Author;
@@ -10,6 +11,7 @@ import com.app.library.repository.AuthorRepository;
 import com.app.library.repository.CategoryRepository;
 import com.app.library.repository.PublisherRepository;
 import com.app.library.utils.AppUtils;
+import com.app.library.utils.SecurityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -130,60 +132,64 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
 
     @Override
     public ResponseEntity<?> addBook(BookDto dto, MultipartFile bookImageLink) {
-        try {
-            Optional<Book> existingBook = bookRepository.findByBookTitle(dto.getBookTitle());
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
+            try {
+                Optional<Book> existingBook = bookRepository.findByBookTitle(dto.getBookTitle());
 
-            if (existingBook.isPresent()) {
-                // Nếu sách đã tồn tại, chỉ cập nhật quantity và thông tin liên quan nếu có
-                Book bookToUpdate = existingBook.get();
-                bookToUpdate.setBookQuantity(bookToUpdate.getBookQuantity() + dto.getBookQuantity());
+                if (existingBook.isPresent()) {
+                    // Nếu sách đã tồn tại, chỉ cập nhật quantity và thông tin liên quan nếu có
+                    Book bookToUpdate = existingBook.get();
+                    bookToUpdate.setBookQuantity(bookToUpdate.getBookQuantity() + dto.getBookQuantity());
 
+                    checkExistCategory(dto);
+
+                    checkExistPublisher(dto);
+
+                    checkExistAuthors(dto,bookToUpdate);
+
+                    if (bookImageLink != null) {
+                        try {
+                            String bookUrl = amazonS3Service.uploadFile(bookImageLink, "books");
+                            bookToUpdate.setBookImageLink(bookUrl);
+                        } catch (IOException e) {
+                            throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update avatar");
+                        }
+                    }
+
+                    bookToUpdate = save(bookToUpdate);
+                    return new ResponseEntity<>(bookToUpdate, HttpStatus.CREATED);
+
+                }
+
+                // Tạo mới sách và lưu vào cơ sở dữ liệu
+                Book newBook = new Book();
                 checkExistCategory(dto);
-
                 checkExistPublisher(dto);
-
-                checkExistAuthors(dto,bookToUpdate);
+                checkExistAuthors(dto,newBook);
+                BeanUtils.copyProperties(dto, newBook);
 
                 if (bookImageLink != null) {
                     try {
                         String bookUrl = amazonS3Service.uploadFile(bookImageLink, "books");
-                        bookToUpdate.setBookImageLink(bookUrl);
+                        newBook.setBookImageLink(bookUrl);
                     } catch (IOException e) {
                         throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update avatar");
                     }
                 }
+                newBook = save(newBook);
+                dto.setBookId(newBook.getBookId());
 
-                bookToUpdate = save(bookToUpdate);
-                return new ResponseEntity<>(bookToUpdate, HttpStatus.CREATED);
 
+                return new ResponseEntity<>(dto, HttpStatus.CREATED);
+
+
+            } catch (Exception e) {
+                // Log thông tin lỗi
+                e.printStackTrace();
+                throw new ObjectException("Book creation failed ");
             }
-
-            // Tạo mới sách và lưu vào cơ sở dữ liệu
-            Book newBook = new Book();
-            checkExistCategory(dto);
-            checkExistPublisher(dto);
-            checkExistAuthors(dto,newBook);
-            BeanUtils.copyProperties(dto, newBook);
-
-            if (bookImageLink != null) {
-                try {
-                    String bookUrl = amazonS3Service.uploadFile(bookImageLink, "books");
-                    newBook.setBookImageLink(bookUrl);
-                } catch (IOException e) {
-                    throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update avatar");
-                }
-            }
-            newBook = save(newBook);
-            dto.setBookId(newBook.getBookId());
-
-
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
-
-
-        } catch (Exception e) {
-            // Log thông tin lỗi
-            e.printStackTrace();
-            throw new ObjectException("Book creation failed ");
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
         }
     }
 
@@ -229,70 +235,79 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
     }
     @Override
     public ResponseEntity<?> updateBook(int id, BookDto dto, MultipartFile bookImageLink) {
-        try {
-            Optional<Book> existingBook = bookRepository.findById(id);
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
+            try {
+                Optional<Book> existingBook = bookRepository.findById(id);
 
-            if (existingBook.isPresent()) {
-                Book bookToUpdate = existingBook.get();
+                if (existingBook.isPresent()) {
+                    Book bookToUpdate = existingBook.get();
 
-                // Cập nhật các thông tin từ dto
-                bookToUpdate.setBookTitle(dto.getBookTitle());
-                bookToUpdate.setBookQuantity(dto.getBookQuantity());
-                bookToUpdate.setBookDescription(dto.getBookDescription());
-                bookToUpdate.setBookPublishedYear(dto.getBookPublishedYear());
-                // Cập nhật các thông tin liên quan khác từ dto
-                checkExistCategory(dto);
-                checkExistPublisher(dto);
-                checkExistAuthors(dto, bookToUpdate);
+                    // Cập nhật các thông tin từ dto
+                    bookToUpdate.setBookTitle(dto.getBookTitle());
+                    bookToUpdate.setBookQuantity(dto.getBookQuantity());
+                    bookToUpdate.setBookDescription(dto.getBookDescription());
+                    bookToUpdate.setBookPublishedYear(dto.getBookPublishedYear());
+                    // Cập nhật các thông tin liên quan khác từ dto
+                    checkExistCategory(dto);
+                    checkExistPublisher(dto);
+                    checkExistAuthors(dto, bookToUpdate);
 
-                if (bookImageLink != null) {
-                    try {
-                        String bookUrl = amazonS3Service.uploadFile(bookImageLink, "books");
-                        bookToUpdate.setBookImageLink(bookUrl);
-                    } catch (IOException e) {
-                        throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
+                    if (bookImageLink != null) {
+                        try {
+                            String bookUrl = amazonS3Service.uploadFile(bookImageLink, "books");
+                            bookToUpdate.setBookImageLink(bookUrl);
+                        } catch (IOException e) {
+                            throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
+                        }
                     }
+
+                    bookToUpdate = save(bookToUpdate);
+                    return new ResponseEntity<>(bookToUpdate, HttpStatus.OK);
+                } else {
+                    throw new ObjectException("Book not found");
                 }
 
-                bookToUpdate = save(bookToUpdate);
-                return new ResponseEntity<>(bookToUpdate, HttpStatus.OK);
-            } else {
-                throw new ObjectException("Book not found");
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new ObjectException("Book update failed");
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ObjectException("Book update failed");
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
         }
+
     }
 
 
     @Override
     public ResponseEntity<?> deleteBook(int id) {
-        try {
-            Book existed = findById(id);
-            // Kiểm tra xem cuốn sách có liên kết đến nhà xuất bản hay không
-            Publisher publisher = existed.getPublisher();
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
+            try {
+                Book existed = findById(id);
+                // Kiểm tra xem cuốn sách có liên kết đến nhà xuất bản hay không
+                Publisher publisher = existed.getPublisher();
 
-            if (publisher != null) {
-                publisher.removeBook(existed);
-            }
-            Category category = existed.getCategory();
-            if (category != null) {
-                category.removeBook(existed);
-            }
-            List<Author> authors = existed.getAuthors();
-
-            for (Author author : authors) {
-                if (author != null) {
-                    author.removeBook(existed);
+                if (publisher != null) {
+                    publisher.removeBook(existed);
                 }
-            }
+                Category category = existed.getCategory();
+                if (category != null) {
+                    category.removeBook(existed);
+                }
+                List<Author> authors = existed.getAuthors();
 
-            bookRepository.delete(existed);
-            return new ResponseEntity<>("Book with Id " + id +" was deleted", HttpStatus.OK);
-        } catch (Exception e) {
-            throw new ObjectException("deleted book failed ");
+                for (Author author : authors) {
+                    if (author != null) {
+                        author.removeBook(existed);
+                    }
+                }
+
+                bookRepository.delete(existed);
+                return new ResponseEntity<>("Book with Id " + id +" was deleted", HttpStatus.OK);
+            } catch (Exception e) {
+                throw new ObjectException("deleted book failed ");
+            }
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
         }
     }
 

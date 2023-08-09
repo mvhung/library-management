@@ -1,9 +1,7 @@
 package com.app.library.service.impl;
 
 import com.app.library.dto.CategoryDto;
-import com.app.library.exception.object.LibraryException;
-import com.app.library.exception.object.ObjectException;
-import com.app.library.exception.object.ResourceNotFoundException;
+import com.app.library.exception.object.*;
 import com.app.library.model.Category;
 import com.app.library.model.User;
 import com.app.library.model.enum_class.RoleName;
@@ -12,6 +10,7 @@ import com.app.library.repository.CategoryRepository;
 import com.app.library.repository.UserRepository;
 import com.app.library.service.ICategoryService;
 import com.app.library.utils.AppUtils;
+import com.app.library.utils.SecurityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -67,48 +66,58 @@ public class CategoryServiceImpl implements ICategoryService {
 
     @Override
     public ResponseEntity<?> createCategory(CategoryDto dto) {
-        Category category = new Category();
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
+            Category category = new Category();
 
-        //copy data từ CategoryDto sang CategoryEntity
-        BeanUtils.copyProperties(dto, category);
-        category = save(category);
+            BeanUtils.copyProperties(dto, category);
+            category = save(category);
 
-        //cập nhật lại id của CategoryDto và trả lại CategoryDto cho client
-        dto.setCategoryId(category.getCategoryId());
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+            dto.setCategoryId(category.getCategoryId());
+            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
+        }
+
     }
     @Override
     public Category updateCategory(int id, CategoryDto dto) {
-        try {
-            Optional<Category> existingCategory = categoryRepository.findById(id);
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
+            try {
+                Optional<Category> existingCategory = categoryRepository.findById(id);
 
-            if (existingCategory.isPresent()) {
-                Category categoryToUpdate = existingCategory.get();
+                if (existingCategory.isPresent()) {
+                    Category categoryToUpdate = existingCategory.get();
 
-                // Cập nhật các thông tin từ dto
-                categoryToUpdate.setCategoryName(dto.getCategoryName());
-                categoryToUpdate.setCategoryDescription(dto.getCategoryDescription());
-                categoryToUpdate = save(categoryToUpdate);
-                return categoryToUpdate;
-            } else {
-                throw new ObjectException("Category not found");
+                    // Cập nhật các thông tin từ dto
+                    categoryToUpdate.setCategoryName(dto.getCategoryName());
+                    categoryToUpdate.setCategoryDescription(dto.getCategoryDescription());
+                    categoryToUpdate = save(categoryToUpdate);
+                    return categoryToUpdate;
+                } else {
+                    throw new ObjectException("Category not found");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new ObjectException("Category update failed");
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ObjectException("Category update failed");
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
         }
     }
     @Override
     public ResponseEntity<?> deleteCategory(int id) {
-        try {
-            Category existed = findById(id);
-            categoryRepository.delete(existed);
-            return new ResponseEntity<>("Category with Id " +id+" was deleted", HttpStatus.OK);
-        } catch (Exception e) {
-            throw new ObjectException("deleted category failed ");
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
+            try {
+                Category existed = findById(id);
+                categoryRepository.delete(existed);
+                return new ResponseEntity<>("Category with Id " +id+" was deleted", HttpStatus.OK);
+            } catch (Exception e) {
+                throw new ObjectException("deleted category failed ");
+            }
+        }else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
         }
-
     }
     @Override
     public ResponseEntity<?> searchCategory(String keyword) {

@@ -21,22 +21,22 @@ public class LibraryApplication {
 //			var admin1 = RegisterRequest.builder()
 //					.firstName("Admin")
 //					.lastName("Admin")
-//					.username("Admin")
-//					.email("admin@mail.com")
+//					.username("Admin 1")
+//					.email("admin1@mail.com")
 //					.password("password")
 //					.roleName(RoleName.ADMIN)
 //					.build();
-//			System.out.println("Admin token: " + service.register(admin1).getToken());
+//			System.out.println("Admin token: " + service.registerAdmin(admin1).getToken());
 //
 //			var admin2 = RegisterRequest.builder()
 //					.firstName("Admin")
 //					.lastName("Admin")
-//					.username("Admin")
-//					.email("manager@mail.com")
+//					.username("Admin 2")
+//					.email("admin2@mail.com")
 //					.password("password")
 //					.roleName(RoleName.ADMIN)
 //					.build();
-//			System.out.println("Manager token: " + service.register(admin2).getToken());
+//			System.out.println("Admin token: " + service.registerAdmin(admin2).getToken());
 //
 //		};
 //	}

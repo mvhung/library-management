@@ -1,5 +1,6 @@
 package com.app.library.service.impl;
 import com.app.library.exception.object.LibraryException;
+import com.app.library.model.enum_class.RoleName;
 import com.app.library.service.impl.AmazonS3Service;
 import com.app.library.auth.AuthenticationRequest;
 import com.app.library.auth.AuthenticationResponse;
@@ -43,13 +44,15 @@ public class AuthenticationService {
         if (existingUser.isPresent()) {
             throw new EmailAlreadyExistsException("Email is already registered");
         }
+
         User user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .roleName(request.getRoleName())
+                .address(request.getAddress())
+                .roleName(RoleName.USER)
                 .build();
 
         if (avatarFile != null) {
@@ -136,5 +139,29 @@ public class AuthenticationService {
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
+    }
+    public AuthenticationResponse registerAdmin(RegisterRequest request) {
+        Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
+        if (existingUser.isPresent()) {
+            throw new EmailAlreadyExistsException("Email is already registered");
+        }
+        User user = User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .roleName(RoleName.ADMIN)
+                .build();
+
+        var savedUser = userRepository.save(user);
+        var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+        saveUserToken(savedUser, jwtToken);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .refreshToken(refreshToken)
+                .avatarUrl(user.getAvatarUrl())
+                .build();
     }
 }

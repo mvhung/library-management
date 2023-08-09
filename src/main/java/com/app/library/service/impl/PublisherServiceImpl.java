@@ -1,6 +1,7 @@
 package com.app.library.service.impl;
 
 import com.app.library.dto.PublisherDto;
+import com.app.library.exception.object.ForbiddenException;
 import com.app.library.exception.object.LibraryException;
 import com.app.library.exception.object.ObjectException;
 import com.app.library.model.Publisher;
@@ -8,6 +9,7 @@ import com.app.library.payload.PagedResponse;
 import com.app.library.repository.PublisherRepository;
 import com.app.library.service.IPublisherService;
 import com.app.library.utils.AppUtils;
+import com.app.library.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,35 +58,40 @@ public class PublisherServiceImpl implements IPublisherService {
 
     @Override
     public Publisher updatePublisher(int id, PublisherDto dto, MultipartFile publisherImageUrl) {
-        try {
-            Optional<Publisher> existingPublisher = publisherRepository.findById(id);
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
+            try {
+                Optional<Publisher> existingPublisher = publisherRepository.findById(id);
 
-            if (existingPublisher.isPresent()) {
-                Publisher publisherToUpdate = existingPublisher.get();
+                if (existingPublisher.isPresent()) {
+                    Publisher publisherToUpdate = existingPublisher.get();
 
-                // Cập nhật các thông tin từ dto
-                publisherToUpdate.setPublisherName(dto.getPublisherName());
-                publisherToUpdate.setPublisherIntroduce(dto.getPublisherIntroduce());
-                publisherToUpdate.setPublisherWebsiteUrl(dto.getPublisherWebsiteUrl());
+                    // Cập nhật các thông tin từ dto
+                    publisherToUpdate.setPublisherName(dto.getPublisherName());
+                    publisherToUpdate.setPublisherIntroduce(dto.getPublisherIntroduce());
+                    publisherToUpdate.setPublisherWebsiteUrl(dto.getPublisherWebsiteUrl());
 
-                if (publisherImageUrl != null) {
-                    try {
-                        String imageUrl = amazonS3Service.uploadFile(publisherImageUrl, "publishers");
-                        publisherToUpdate.setPublisherImageUrl(imageUrl);
-                    } catch (IOException e) {
-                        throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
+                    if (publisherImageUrl != null) {
+                        try {
+                            String imageUrl = amazonS3Service.uploadFile(publisherImageUrl, "publishers");
+                            publisherToUpdate.setPublisherImageUrl(imageUrl);
+                        } catch (IOException e) {
+                            throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
+                        }
                     }
+                    publisherToUpdate = publisherRepository.save(publisherToUpdate);
+                    return  publisherToUpdate;
+                } else {
+                    throw new ObjectException("Publisher not found");
                 }
-                publisherToUpdate = publisherRepository.save(publisherToUpdate);
-               return  publisherToUpdate;
-            } else {
-                throw new ObjectException("Publisher not found");
-            }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ObjectException("Publisher update failed");
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new ObjectException("Publisher update failed");
+            }
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
         }
+
     }
 
 }

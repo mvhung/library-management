@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.app.library.exception.object.ForbiddenException;
 import com.app.library.exception.object.LibraryException;
 import com.app.library.model.Publisher;
 import com.app.library.payload.PagedResponse;
 import com.app.library.utils.AppUtils;
+import com.app.library.utils.SecurityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -61,44 +63,52 @@ public class AuthorServiceImpl implements IAuthorService {
 
     @Override
     public Author updateAuthor(int id, AuthorDto dto, MultipartFile authorImageUrl) {
-        try {
-            Optional<Author> existAuthor = authorRepository.findById(id);
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
+            try {
+                Optional<Author> existAuthor = authorRepository.findById(id);
 
-            if (existAuthor.isPresent()) {
-                Author authorUpdate = existAuthor.get();
-                authorUpdate.setAuthorFullName(authorUpdate.getAuthorFullName() + dto.getAuthorFullName());
-                authorUpdate.setAuthorIntroduce(authorUpdate.getAuthorIntroduce() + dto.getAuthorIntroduce());
-                authorUpdate.setAuthorImageUrl(authorUpdate.getAuthorImageUrl() + dto.getAuthorImageUrl());
+                if (existAuthor.isPresent()) {
+                    Author authorUpdate = existAuthor.get();
+                    authorUpdate.setAuthorFullName(authorUpdate.getAuthorFullName() + dto.getAuthorFullName());
+                    authorUpdate.setAuthorIntroduce(authorUpdate.getAuthorIntroduce() + dto.getAuthorIntroduce());
+                    authorUpdate.setAuthorImageUrl(authorUpdate.getAuthorImageUrl() + dto.getAuthorImageUrl());
 
-                if (authorImageUrl != null) {
-                    try {
-                        String imageUrl = amazonS3Service.uploadFile(authorImageUrl, "authors");
-                        authorUpdate.setAuthorImageUrl(imageUrl);
-                    } catch (IOException e) {
-                        throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
+                    if (authorImageUrl != null) {
+                        try {
+                            String imageUrl = amazonS3Service.uploadFile(authorImageUrl, "authors");
+                            authorUpdate.setAuthorImageUrl(imageUrl);
+                        } catch (IOException e) {
+                            throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
+                        }
                     }
+                    authorUpdate = save(authorUpdate);
+                    return authorUpdate;
+                } else {
+                    throw new ObjectException("Author not found");
                 }
-                authorUpdate = save(authorUpdate);
-                return authorUpdate;
-            } else {
-                throw new ObjectException("Author not found");
+            } catch (Exception e) {
+                // Log thông tin lỗi
+                e.printStackTrace();
+                throw new ObjectException("Author creation failed ");
             }
-        } catch (Exception e) {
-            // Log thông tin lỗi
-            e.printStackTrace();
-            throw new ObjectException("Author creation failed ");
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
         }
     }
 
     @Override
     public ResponseEntity<?> deleteAuthor(int id) {
-        try {
-            Author existed = authorRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("can't find author id:" + id));
-            authorRepository.delete(existed);
-            return new ResponseEntity<>("Author with Id " + id + " was deleted", HttpStatus.OK);
-        } catch (Exception e) {
-            throw new ObjectException("deleted author failed ");
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
+            try {
+                Author existed = authorRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("can't find author id:" + id));
+                authorRepository.delete(existed);
+                return new ResponseEntity<>("Author with Id " + id + " was deleted", HttpStatus.OK);
+            } catch (Exception e) {
+                throw new ObjectException("deleted author failed ");
+            }
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
         }
     }
 }
