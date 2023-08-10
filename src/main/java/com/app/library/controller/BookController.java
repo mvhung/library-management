@@ -54,24 +54,13 @@ public class BookController {
         return bookServiceImpl.getAllBooks(page, size);
     }
 
-
-    @GetMapping("/publisher/{publisherName}")
-    public  PagedResponse<Book> getBooksByPublisherName(
-        @PathVariable String publisherName,
-        @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
-        @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
-       return bookServiceImpl.getBooksByPublisherName(publisherName,page,size);
+    @GetMapping("/search")
+    public PagedResponse<Book> searchBooks(
+            @RequestParam("keyword") String keyword,
+            @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
+            @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
+        return bookServiceImpl.searchBook(keyword,page,size);
     }
-
-//    @GetMapping("/author/{authorName}")
-//    public ResponseEntity<List<Book>> getBookByAuthorName(@PathVariable String authorName) {
-//        List<Book> books = bookServiceImpl.getBookByAuthorName(authorName);
-//        return new ResponseEntity<>(books,HttpStatus.OK);
-//    }
-//    @GetMapping("/search")
-//    public ResponseEntity<?> searchBooks(@RequestParam("keyword") String keyword) {
-//        return bookServiceImpl.searchBook(keyword);
-//    }
     @PutMapping("/{id}")
     public ResponseEntity<?> updateBook(
             @Valid @PathVariable(name="id") int id,

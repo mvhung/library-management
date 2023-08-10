@@ -4,8 +4,10 @@ import com.app.library.dto.PublisherDto;
 import com.app.library.exception.object.ForbiddenException;
 import com.app.library.exception.object.LibraryException;
 import com.app.library.exception.object.ObjectException;
+import com.app.library.model.Book;
 import com.app.library.model.Publisher;
 import com.app.library.payload.PagedResponse;
+import com.app.library.repository.BookRepository;
 import com.app.library.repository.PublisherRepository;
 import com.app.library.service.IPublisherService;
 import com.app.library.utils.AppUtils;
@@ -32,6 +34,8 @@ public class PublisherServiceImpl implements IPublisherService {
     private PublisherRepository publisherRepository;
     @Autowired
     private AmazonS3Service amazonS3Service;
+    @Autowired
+    private BookRepository bookRepository;
     @Override
     public ResponseEntity<?> getPublisher(int id) {
         try {
@@ -92,6 +96,24 @@ public class PublisherServiceImpl implements IPublisherService {
             throw new ForbiddenException("You don't have permission to access this resource.");
         }
 
+    }
+
+    @Override
+    public PagedResponse<Book> getBooksByPublisherId(int publisherId, int page, int size) {
+        Publisher publisher = publisherRepository.findById(publisherId)
+                .orElseThrow(() -> new ObjectException("Publisher not found"));
+
+        AppUtils.validatePageNumberAndSize(page, size);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+        // Lấy danh sách sách thuộc publisher theo phân trang
+        Page<Book> books = bookRepository.findByPublisher(publisher, pageable);
+
+        List<Book> content = books.getNumberOfElements() == 0 ? Collections.emptyList() : books.getContent();
+
+        return new PagedResponse<>(content, books.getNumber(), books.getSize(), books.getTotalElements(),
+                books.getTotalPages(), books.isLast());
     }
 
 }

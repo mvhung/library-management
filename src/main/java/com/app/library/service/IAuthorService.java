@@ -2,6 +2,7 @@ package com.app.library.service;
 
 import com.app.library.dto.AuthorDto;
 import com.app.library.model.Author;
+import com.app.library.model.Book;
 import com.app.library.payload.PagedResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,4 +18,5 @@ public interface IAuthorService {
 
     public ResponseEntity<?> deleteAuthor(int id);
 
+    PagedResponse<Book> getBooksByAuthorId(int authorId, int page, int size);
 }

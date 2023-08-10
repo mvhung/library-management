@@ -12,14 +12,17 @@ import java.util.List;
 public interface IBookService {
     public ResponseEntity<?> getBook(int id);
     public PagedResponse<Book> getAllBooks(int page, int size) ;
-    public PagedResponse<Book> getBooksByCategoryName(String categoryName, int page, int size);
-    public PagedResponse<Book> getBooksByPublisherName(String publisherName, int page, int size);
-    public PagedResponse<Book> getBookByAuthorName(String publisherName, int page, int size);
+
     public ResponseEntity<?> addBook(BookDto dto,MultipartFile bookImageLink);
     public ResponseEntity<?> updateBook(int id, BookDto dto, MultipartFile bookImageLink);
     ResponseEntity<?> deleteBook(int id);
-//    ResponseEntity<?> searchBook(String keyword);
 
     PagedResponse<Book> searchBook(String keyword, int page, int size);
+
+    PagedResponse<Book> searchBookByAuthor(String authorName, int page, int size);
+    PagedResponse<Book> searchBookByCategory(String categoryName, int page, int size);
+
+    PagedResponse<Book> searchBookByPublisher(String publisherName, int page, int size);
+
 
 }

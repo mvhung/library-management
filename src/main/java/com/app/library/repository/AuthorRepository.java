@@ -4,7 +4,10 @@ import com.app.library.exception.object.ResourceNotFoundException;
 import com.app.library.model.Author;
 import com.app.library.model.Publisher;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AuthorRepository extends JpaRepository<Author, Integer> {
@@ -16,6 +19,5 @@ public interface AuthorRepository extends JpaRepository<Author, Integer> {
                 .orElseThrow(() -> new ResourceNotFoundException("Author", "Author name", authorName));
     }
 
-
-
+    List<Author> findByAuthorFullNameContaining(String keyword);
 }

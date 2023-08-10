@@ -25,10 +25,7 @@ import com.app.library.repository.BookRepository;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,58 +69,6 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
                 books.getTotalPages(), books.isLast());
     }
 
-    @Override
-    public PagedResponse<Book> getBooksByCategoryName(String categoryName, int page, int size) {
-        try {
-            Category category = categoryRepository.getByCategoryName(categoryName);
-
-            Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
-
-            Page<Book> books = bookRepository.findByCreatedBy(category.getCategoryId(), pageable);
-
-            List<Book> content = books.getNumberOfElements() > 0 ? books.getContent() : Collections.emptyList();
-
-            return new PagedResponse<>(content, books.getNumber(), books.getSize(), books.getTotalElements(), books.getTotalPages(), books.isLast());
-        }catch (Exception e) {
-            throw  new ObjectException("No get detail books");
-        }
-    }
-    @Override
-    public PagedResponse<Book> getBooksByPublisherName(String publisherName, int page, int size) {
-        try {
-            Publisher publisher = publisherRepository.getByPublisherName(publisherName);
-
-            Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
-
-            Page<Book> books = bookRepository.findByCreatedBy(publisher.getPublisherId(), pageable);
-
-            List<Book> content = books.getNumberOfElements() > 0 ? books.getContent() : Collections.emptyList();
-
-            return new PagedResponse<>(content, books.getNumber(), books.getSize(), books.getTotalElements(), books.getTotalPages(), books.isLast());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw  new ObjectException("No get detail books");
-        }
-    }
-
-    @Override
-    public PagedResponse<Book> getBookByAuthorName(String authorFullName, int page, int size) {
-        try {
-            Author author = authorRepository.getByAuthorName(authorFullName);
-
-            Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
-
-            Page<Book> books = bookRepository.findByCreatedBy(author.getAuthorId(), pageable);
-
-            List<Book> content = books.getNumberOfElements() > 0 ? books.getContent() : Collections.emptyList();
-
-            return new PagedResponse<>(content, books.getNumber(), books.getSize(), books.getTotalElements(), books.getTotalPages(), books.isLast());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ObjectException("No get detail books");
-        }
-
-    }
 
     public Page<Book> findAll(Pageable pageable)  {
         return bookRepository.findAll(pageable);
@@ -311,10 +256,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
         }
     }
 
-    @Override
-    public PagedResponse<Book> searchBook(String keyword, int page, int size) {
-        return null;
-    }
+
 
     private Book findById(int id) {
         Optional<Book> found = bookRepository.findById(id);
@@ -324,24 +266,89 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
         return found.get();
     }
 
-//    @Override
-//    public ResponseEntity<?> searchBook(String keyword) {
-//        try {
-//            List<Book> books = bookRepository.findAll();
-//
-//            List<Book> results =  books.stream()
-//                    .filter(book-> book.getBookTitle().toLowerCase().contains(keyword.toLowerCase())|| book.getCategory().getCategoryName().toLowerCase().contains(keyword.toLowerCase()))
-//                    .collect(Collectors.toList());
-//
-//            if (results.size() == 0) {
-//                return new ResponseEntity<>("No result  ", HttpStatus.OK);
-//            }
-//
-//            return new ResponseEntity<>(results, HttpStatus.OK);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new ObjectException("Can't find book have " + keyword);
-//        }
-//    }
+    @Override
+    public PagedResponse<Book> searchBook(String keyword, int page, int size) {
+        List<Book> result = new ArrayList<>();
+
+
+        // Tìm kiếm sách theo tiêu đề
+        List<Book> booksByTitle = bookRepository.findByBookTitleContaining(keyword);
+        result.addAll(booksByTitle);
+
+        // Tìm kiếm sách theo tác giả
+        List<Author> authors = authorRepository.findByAuthorFullNameContaining(keyword);
+        for (Author author : authors) {
+            result.addAll(searchBookByAuthor(author.getAuthorFullName(), page, size).getContent());
+        }
+
+        // Tìm kiếm sách theo thể loại
+        List<Category> categories = categoryRepository.searchCategoriesByKeyword(keyword);
+        for (Category category : categories) {
+            result.addAll(searchBookByCategory(category.getCategoryName(), page, size).getContent());
+        }
+
+        // Tìm kiếm sách theo nhà xuất bản
+        List<Publisher> publishers = publisherRepository.searchPublishersByKeyword(keyword);
+        for (Publisher publisher : publishers) {
+            result.addAll(searchBookByPublisher(publisher.getPublisherName(), page, size).getContent());
+        }
+
+        // Tạo một danh sách sách duy nhất từ kết quả các hàm search riêng
+        Set<Book> uniqueBooks = new HashSet<>(result);
+
+        List<Book> content = new ArrayList<>(uniqueBooks);
+
+        // Phân trang cho danh sách kết quả
+        int totalItems = content.size();
+        int totalPages = (int) Math.ceil((double) totalItems / size);
+        int start = page * size;
+        int end = Math.min(start + size, totalItems);
+        content = content.subList(start, end);
+
+        return new PagedResponse<>(content, page, size, totalItems, totalPages, page == totalPages - 1);
+    }
+
+    @Override
+    public PagedResponse<Book> searchBookByAuthor(String authorName, int page, int size) {
+        AppUtils.validatePageNumberAndSize(page, size);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+        Page<Book> searchedBooks = bookRepository.searchBooksByAuthorName(authorName, pageable);
+
+        List<Book> content = searchedBooks.getNumberOfElements() == 0 ? Collections.emptyList() : searchedBooks.getContent();
+
+        return new PagedResponse<>(content, searchedBooks.getNumber(), searchedBooks.getSize(), searchedBooks.getTotalElements(),
+                searchedBooks.getTotalPages(), searchedBooks.isLast());
+    }
+
+    @Override
+    public PagedResponse<Book> searchBookByCategory(String categoryName, int page, int size) {
+        AppUtils.validatePageNumberAndSize(page, size);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+        Page<Book> searchedBooks = bookRepository.searchBooksByCategoryName(categoryName, pageable);
+
+        List<Book> content = searchedBooks.getNumberOfElements() == 0 ? Collections.emptyList() : searchedBooks.getContent();
+
+        return new PagedResponse<>(content, searchedBooks.getNumber(), searchedBooks.getSize(), searchedBooks.getTotalElements(),
+                searchedBooks.getTotalPages(), searchedBooks.isLast());
+    }
+
+    @Override
+    public PagedResponse<Book> searchBookByPublisher(String publisherName, int page, int size) {
+        AppUtils.validatePageNumberAndSize(page, size);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+        Page<Book> searchedBooks = bookRepository.searchBooksByPublisherName(publisherName, pageable);
+
+        List<Book> content = searchedBooks.getNumberOfElements() == 0 ? Collections.emptyList() : searchedBooks.getContent();
+
+        return new PagedResponse<>(content, searchedBooks.getNumber(), searchedBooks.getSize(), searchedBooks.getTotalElements(),
+                searchedBooks.getTotalPages(), searchedBooks.isLast());
+    }
+
 
 }

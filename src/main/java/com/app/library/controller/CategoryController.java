@@ -1,6 +1,7 @@
 package com.app.library.controller;
 
 import com.app.library.dto.CategoryDto;
+import com.app.library.model.Book;
 import com.app.library.model.Category;
 import com.app.library.payload.PagedResponse;
 import com.app.library.service.impl.CategoryServiceImpl;
@@ -43,6 +44,16 @@ public class CategoryController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getCategory(@PathVariable(name = "id") int id) {
         return categoryServiceImpl.getCategory(id);
+    }
+
+    @GetMapping("/books/{id}")
+    public PagedResponse<Book> getBooksByCategoryId(
+            @Valid @PathVariable(name = "id") int id,
+            @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
+            @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size
+    ) {
+        PagedResponse<Book> pagedResponse = categoryServiceImpl.getBooksByCategoryId(id, page, size);
+        return pagedResponse;
     }
 
     @PutMapping("/{id}")

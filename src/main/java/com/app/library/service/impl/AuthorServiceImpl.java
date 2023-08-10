@@ -8,8 +8,11 @@ import java.util.stream.Collectors;
 
 import com.app.library.exception.object.ForbiddenException;
 import com.app.library.exception.object.LibraryException;
+import com.app.library.model.Book;
+import com.app.library.model.Category;
 import com.app.library.model.Publisher;
 import com.app.library.payload.PagedResponse;
+import com.app.library.repository.BookRepository;
 import com.app.library.utils.AppUtils;
 import com.app.library.utils.SecurityUtil;
 import org.springframework.beans.BeanUtils;
@@ -35,6 +38,8 @@ public class AuthorServiceImpl implements IAuthorService {
     private AuthorRepository authorRepository;
     @Autowired
     private AmazonS3Service amazonS3Service;
+    @Autowired
+    private BookRepository bookRepository;
 
     public Author save(Author author) {
         return authorRepository.save(author);
@@ -59,6 +64,23 @@ public class AuthorServiceImpl implements IAuthorService {
 
         return new PagedResponse<>(content, authors.getNumber(), authors.getSize(), authors.getTotalElements(),
                 authors.getTotalPages(), authors.isLast());
+    }
+
+    @Override
+    public PagedResponse<Book> getBooksByAuthorId(int authorId, int page, int size) {
+        Author author = authorRepository.findById(authorId)
+                .orElseThrow(() -> new ObjectException("Author not found"));
+
+        AppUtils.validatePageNumberAndSize(page, size);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+        Page<Book> books = bookRepository.findAuthorById(authorId, pageable);
+
+        List<Book> content = books.getNumberOfElements() == 0 ? Collections.emptyList() : books.getContent();
+
+        return new PagedResponse<>(content, books.getNumber(), books.getSize(), books.getTotalElements(),
+                books.getTotalPages(), books.isLast());
     }
 
     @Override
@@ -111,4 +133,6 @@ public class AuthorServiceImpl implements IAuthorService {
             throw new ForbiddenException("You don't have permission to access this resource.");
         }
     }
+
+
 }

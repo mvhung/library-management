@@ -1,6 +1,7 @@
 package com.app.library.controller;
 
 import com.app.library.dto.PublisherDto;
+import com.app.library.model.Book;
 import com.app.library.model.Category;
 import com.app.library.model.Publisher;
 import com.app.library.payload.PagedResponse;
@@ -47,4 +48,15 @@ public class PublisherController {
         Publisher updated = publisherServiceImpl.updatePublisher(id,dto,publisherImageUrl);
         return new ResponseEntity<>(updated,HttpStatus.CREATED);
     }
+
+    @GetMapping("/books/{id}")
+    public PagedResponse<Book> getBooksByPublisherId(
+            @Valid @PathVariable(name = "id") int id,
+            @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
+            @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size
+    ) {
+        PagedResponse<Book> pagedResponse = publisherServiceImpl.getBooksByPublisherId(id, page, size);
+        return pagedResponse;
+    }
+
 }

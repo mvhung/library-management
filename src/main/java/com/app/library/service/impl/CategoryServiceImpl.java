@@ -2,10 +2,13 @@ package com.app.library.service.impl;
 
 import com.app.library.dto.CategoryDto;
 import com.app.library.exception.object.*;
+import com.app.library.model.Book;
 import com.app.library.model.Category;
+import com.app.library.model.Publisher;
 import com.app.library.model.User;
 import com.app.library.model.enum_class.RoleName;
 import com.app.library.payload.PagedResponse;
+import com.app.library.repository.BookRepository;
 import com.app.library.repository.CategoryRepository;
 import com.app.library.repository.UserRepository;
 import com.app.library.service.ICategoryService;
@@ -38,6 +41,9 @@ public class CategoryServiceImpl implements ICategoryService {
     private CategoryRepository categoryRepository;
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
 
     @Override
     public PagedResponse<Category> getAllCategories(int page, int size) {
@@ -133,6 +139,24 @@ public class CategoryServiceImpl implements ICategoryService {
         } catch (Exception e) {
             throw new ObjectException("Can't find category ");
         }
+    }
+
+    @Override
+    public PagedResponse<Book> getBooksByCategoryId(int categoryId, int page, int size) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ObjectException("Publisher not found"));
+
+        AppUtils.validatePageNumberAndSize(page, size);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+        // Lấy danh sách sách thuộc publisher theo phân trang
+        Page<Book> books = bookRepository.findByCategory(category, pageable);
+
+        List<Book> content = books.getNumberOfElements() == 0 ? Collections.emptyList() : books.getContent();
+
+        return new PagedResponse<>(content, books.getNumber(), books.getSize(), books.getTotalElements(),
+                books.getTotalPages(), books.isLast());
     }
 
 
