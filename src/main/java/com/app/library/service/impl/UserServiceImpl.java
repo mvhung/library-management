@@ -37,7 +37,7 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private  PasswordEncoder passwordEncoder;
 
-    public ResponseEntity<User> updateUser(int id, RegisterRequest updateUserRequest, MultipartFile avatarFile) {
+    public ResponseEntity<User> updateUser(int id, RegisterRequest updateUserRequest) {
         if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")
                 || SecurityUtil.hasCurrentUserAnyOfAuthorities("USER_PERMISSION") ){
             Optional<User> userOptional = userRepository.findById(id);
@@ -52,15 +52,7 @@ public class UserServiceImpl implements IUserService {
             existingUser.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
             existingUser.setAddress(updateUserRequest.getAddress());
             existingUser.setEmail(updateUserRequest.getEmail());
-            if (avatarFile != null) {
-                try {
-                    String avatarUrl = amazonS3Service.uploadFile(avatarFile, "avatars");
-                    existingUser.setAvatarUrl(avatarUrl);
-                } catch (IOException e) {
-                    throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update avatar");
-                }
-            }
-            // Cập nhật các trường thông tin khác theo updateUserRequest
+
             userRepository.save(existingUser);
             return new ResponseEntity<>(existingUser,HttpStatus.OK);
         } else {
@@ -123,5 +115,25 @@ public class UserServiceImpl implements IUserService {
     @Override
     public ResponseEntity<?> listByGroup() {
         return null;
+    }
+
+    @Override
+    public User updateAvatar(int id, MultipartFile avatarFile) throws IOException {
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")
+                || SecurityUtil.hasCurrentUserAnyOfAuthorities("USER_PERMISSION")){
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+            try {
+                String imageUrl = amazonS3Service.uploadFile(avatarFile, "avatars");
+                user.setAvatarUrl(imageUrl);
+                User updatedUser = userRepository.save(user);
+
+                return updatedUser;
+            } catch (IOException e) {
+                throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
+            }
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
+        }
     }
 }

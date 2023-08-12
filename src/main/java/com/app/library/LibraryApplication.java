@@ -129,28 +129,30 @@ public class LibraryApplication {
 //				book.setBookDescription(faker.lorem().sentence());
 //				book.setBookImageLink(faker.internet().image());
 //
-//				// Choose a random category
-//				Category category = categories.get(faker.random().nextInt(categories.size()));
-//				book.setCategory(category);
+////				// Choose a random category
+////				Category category = categories.get(faker.random().nextInt(categories.size()));
+////				book.setCategory(category);
+////
+////				// Choose a random publisher
+////				Publisher publisher = publishers.get(faker.random().nextInt(publishers.size()));
+////				book.setPublisher(publisher);
+////
+////				// Choose two random authors
+////				List<Author> selectedAuthors = new ArrayList<>();
+////				for (int j = 0; j < 2; j++) {
+////					Author author = authors.get(faker.random().nextInt(authors.size()));
+////					selectedAuthors.add(author);
+////				}
+////				book.setAuthors(selectedAuthors);
 //
-//				// Choose a random publisher
-//				Publisher publisher = publishers.get(faker.random().nextInt(publishers.size()));
-//				book.setPublisher(publisher);
+////				entityManager.persist(book);
 //
-//				// Choose two random authors
-//				List<Author> selectedAuthors = new ArrayList<>();
-//				for (int j = 0; j < 2; j++) {
-//					Author author = authors.get(faker.random().nextInt(authors.size()));
-//					selectedAuthors.add(author);
-//				}
-//				book.setAuthors(selectedAuthors);
-//
-//				entityManager.persist(book);
+//				bookRepository.save(book);
 //			}
 //		};
 //	}
-
-
+//
+//
 //	@Bean
 //	public CommandLineRunner commandLineRunner(
 //			AuthenticationService service

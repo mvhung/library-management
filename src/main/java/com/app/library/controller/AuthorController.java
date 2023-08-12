@@ -3,6 +3,7 @@ import com.app.library.dto.AuthorDto;
 import com.app.library.model.Author;
 import com.app.library.model.Book;
 import com.app.library.model.Publisher;
+import com.app.library.model.User;
 import com.app.library.payload.PagedResponse;
 import com.app.library.service.impl.AuthorServiceImpl;
 import com.app.library.service.impl.MapValidationErrorService;
@@ -14,8 +15,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping(path = "/api/v1/authors")
+@CrossOrigin(origins = "*")
 public class AuthorController {
 
     @Autowired
@@ -53,15 +57,16 @@ public class AuthorController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<?> updateAuthor(@Valid @PathVariable(name="id") int id,
-                                          @Valid @ModelAttribute AuthorDto dto,
-                                          @RequestParam(value = "authorImageUrl", required = false) MultipartFile authorImageUrl,
-                                          BindingResult result) {
-        ResponseEntity<?> responseEntity =  mapValidationErrorService.mapValidationFields(result);
-        if(responseEntity != null) {
-            return responseEntity;
-        }
-        Author updated = authorServiceImpl.updateAuthor(id, dto, authorImageUrl);
+                                          @Valid @RequestBody AuthorDto dto
+                                          ) {
+        Author updated = authorServiceImpl.updateAuthor(id, dto);
 
         return new ResponseEntity<>(updated, HttpStatus.OK);
+    }
+
+    @PostMapping("/update-image/{id}")
+    public ResponseEntity<Author> updateImageAuthor(@PathVariable int id, @RequestParam("authorImage") MultipartFile authorImage) throws IOException {
+        Author updatedAuthor = authorServiceImpl.updateAuthorUrl(id,authorImage);
+        return ResponseEntity.ok(updatedAuthor);
     }
 }

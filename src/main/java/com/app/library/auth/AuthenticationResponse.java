@@ -13,6 +13,4 @@ public class AuthenticationResponse {
     private String token;
     @JsonProperty("refresh_token")
     private String refreshToken;
-    @JsonProperty("avatar_url")
-    private String avatarUrl;
 }

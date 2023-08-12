@@ -8,13 +8,17 @@ import com.app.library.model.User;
 import com.app.library.payload.PagedResponse;
 import com.app.library.service.impl.UserServiceImpl;
 import com.app.library.utils.AppConstants;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/v1/users")
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
@@ -34,11 +38,16 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(
             @PathVariable(name = "id") int id,
-            @ModelAttribute RegisterRequest updateUserRequest,
-            @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile
+            @Valid @RequestBody RegisterRequest updateUserRequest
     ) {
-        return userService.updateUser(id, updateUserRequest, avatarFile);
+        return userService.updateUser(id, updateUserRequest);
 
+    }
+
+    @PostMapping("/update-avatar/{id}")
+    public ResponseEntity<User> updateAvatar(@PathVariable int id, @RequestParam("avatarFile") MultipartFile avatarFile) throws IOException {
+        User updatedUser = userService.updateAvatar(id, avatarFile);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @RequestMapping(value = "delete/{id}",method = RequestMethod.DELETE)

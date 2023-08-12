@@ -1,6 +1,7 @@
 package com.app.library.controller;
 
 import com.app.library.dto.BookDto;
+import com.app.library.model.Author;
 import com.app.library.model.Category;
 import com.app.library.payload.PagedResponse;
 import com.app.library.service.impl.MapValidationErrorService;
@@ -20,10 +21,12 @@ import com.app.library.model.Book;
 import com.app.library.service.impl.BookServiceImpl;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/books")
+@CrossOrigin(origins = "*")
 public class BookController {
 
     @Autowired
@@ -37,14 +40,13 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addBook(@Valid @ModelAttribute BookDto dto,
-                                     @RequestParam(value = "bookImageLink", required = false) MultipartFile bookImageLink,
+    public ResponseEntity<?> addBook(@Valid @RequestBody BookDto dto,
                                      BindingResult result) {
         ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationFields(result);
         if (responseEntity != null) {
             return responseEntity;
         }
-        return bookServiceImpl.addBook(dto, bookImageLink);
+        return bookServiceImpl.addBook(dto);
     }
 
     @GetMapping
@@ -64,16 +66,22 @@ public class BookController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateBook(
             @Valid @PathVariable(name="id") int id,
-            @Valid @ModelAttribute BookDto dto ,
-            @RequestParam(value = "bookImageLink", required = false) MultipartFile bookImageLink,
+            @Valid @RequestBody BookDto dto ,
             BindingResult result) {
 
         ResponseEntity<?> responseEntity =  mapValidationErrorService.mapValidationFields(result);
         if(responseEntity != null) {
             return responseEntity;
         }
-        return bookServiceImpl.updateBook(id,dto,bookImageLink);
+        return bookServiceImpl.updateBook(id,dto);
     }
+    @PostMapping("/update-image/{id}")
+    public ResponseEntity<Book> updateImageBook(@PathVariable int id,
+                                                @RequestParam("bookImageLink") MultipartFile bookImageLink) throws IOException {
+        Book updatedBook = bookServiceImpl.updateImageBook(id,bookImageLink);
+        return ResponseEntity.ok(updatedBook);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable(name="id") int id) {
         return bookServiceImpl.deleteBook(id);

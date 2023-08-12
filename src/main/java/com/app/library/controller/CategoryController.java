@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/categories")
+@CrossOrigin(origins = "*")
 public class CategoryController {
     @Autowired
     CategoryServiceImpl categoryServiceImpl;

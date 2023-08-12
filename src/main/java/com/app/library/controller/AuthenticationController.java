@@ -27,6 +27,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private  final LogoutService logoutService;
@@ -36,10 +37,10 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
-            @ModelAttribute RegisterRequest request,
-            @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile
+            @RequestBody RegisterRequest request
+
     ) {
-        return ResponseEntity.ok(authenticationService.register(request, avatarFile));
+        return ResponseEntity.ok(authenticationService.register(request));
     }
 
     @PostMapping("/authenticate")

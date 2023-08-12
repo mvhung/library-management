@@ -16,10 +16,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/publishers")
+@CrossOrigin(origins = "*")
 public class PublisherController {
     @Autowired
     PublisherServiceImpl publisherServiceImpl;
@@ -38,15 +40,21 @@ public class PublisherController {
     }
     @PutMapping("{id}")
     public ResponseEntity<?> updatePublisher(@Valid @PathVariable(name="id") int id,
-                                             @Valid @ModelAttribute PublisherDto dto ,
-                                             @RequestParam(value = "publisherImageUrl", required = false) MultipartFile publisherImageUrl,
+                                             @Valid @RequestBody PublisherDto dto ,
                                              BindingResult result){
         ResponseEntity<?> responseEntity =  mapValidationErrorService.mapValidationFields(result);
         if(responseEntity != null) {
             return responseEntity;
         }
-        Publisher updated = publisherServiceImpl.updatePublisher(id,dto,publisherImageUrl);
+        Publisher updated = publisherServiceImpl.updatePublisher(id,dto);
         return new ResponseEntity<>(updated,HttpStatus.CREATED);
+    }
+
+    @PostMapping("/update-image/{id}")
+    public ResponseEntity<Publisher> updateImagePublisher(@PathVariable int id,
+                                                @RequestParam("publisherImage") MultipartFile publisherImage) throws IOException {
+        Publisher updatedPublisher = publisherServiceImpl.updateImagePublisher(id,publisherImage);
+        return ResponseEntity.ok(updatedPublisher);
     }
 
     @GetMapping("/books/{id}")

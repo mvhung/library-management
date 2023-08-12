@@ -32,10 +32,9 @@ public class User implements UserDetails {
     @Column(name = "us_id")
     private int userId;
 
-
-    @Column(name = "us_firstName", nullable = false)
+    @Column(name = "us_firstName")
     private String firstName;
-    @Column(name = "us_lastName", nullable = false)
+    @Column(name = "us_lastName")
     private String lastName;
 
     @Column(name = "us_username", nullable = false)

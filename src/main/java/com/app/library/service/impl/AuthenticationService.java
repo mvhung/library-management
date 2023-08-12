@@ -39,7 +39,7 @@ public class AuthenticationService {
     @Autowired
     private  final AmazonS3Service amazonS3Service;
 
-    public AuthenticationResponse register(RegisterRequest request, MultipartFile avatarFile) {
+    public AuthenticationResponse register(RegisterRequest request) {
         Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
         if (existingUser.isPresent()) {
             throw new EmailAlreadyExistsException("Email is already registered");
@@ -55,15 +55,7 @@ public class AuthenticationService {
                 .roleName(RoleName.USER)
                 .build();
 
-        if (avatarFile != null) {
-            try {
-                String avatarUrl = amazonS3Service.uploadFile(avatarFile, "avatars");
-                user.setAvatarUrl(avatarUrl);
 
-            } catch (IOException e) {
-                throw new LibraryException(HttpStatus.BAD_REQUEST,"No add avatar");
-            }
-        }
         var savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
@@ -71,7 +63,6 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .refreshToken(refreshToken)
-                .avatarUrl(user.getAvatarUrl())
                 .build();
     }
 
@@ -161,7 +152,6 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .refreshToken(refreshToken)
-                .avatarUrl(user.getAvatarUrl())
                 .build();
     }
 }

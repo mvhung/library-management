@@ -12,11 +12,12 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequest {
+    private String address;
+    private String email;
     private String firstName;
     private String lastName;
     private String username;
-    private String email;
-    private String address;
+
     private String password;
     private RoleName roleName;
     private MultipartFile avatarFile;

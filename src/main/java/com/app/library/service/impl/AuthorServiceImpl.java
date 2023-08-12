@@ -8,9 +8,8 @@ import java.util.stream.Collectors;
 
 import com.app.library.exception.object.ForbiddenException;
 import com.app.library.exception.object.LibraryException;
-import com.app.library.model.Book;
-import com.app.library.model.Category;
-import com.app.library.model.Publisher;
+import com.app.library.exception.object.UserNotFoundException;
+import com.app.library.model.*;
 import com.app.library.payload.PagedResponse;
 import com.app.library.repository.BookRepository;
 import com.app.library.utils.AppUtils;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 import com.app.library.dto.AuthorDto;
 import com.app.library.exception.object.ObjectException;
-import com.app.library.model.Author;
 import com.app.library.repository.AuthorRepository;
 import com.app.library.service.IAuthorService;
 import org.springframework.web.multipart.MultipartFile;
@@ -84,7 +82,7 @@ public class AuthorServiceImpl implements IAuthorService {
     }
 
     @Override
-    public Author updateAuthor(int id, AuthorDto dto, MultipartFile authorImageUrl) {
+    public Author updateAuthor(int id, AuthorDto dto) {
         if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
             try {
                 Optional<Author> existAuthor = authorRepository.findById(id);
@@ -95,14 +93,6 @@ public class AuthorServiceImpl implements IAuthorService {
                     authorUpdate.setAuthorIntroduce(authorUpdate.getAuthorIntroduce() + dto.getAuthorIntroduce());
                     authorUpdate.setAuthorImageUrl(authorUpdate.getAuthorImageUrl() + dto.getAuthorImageUrl());
 
-                    if (authorImageUrl != null) {
-                        try {
-                            String imageUrl = amazonS3Service.uploadFile(authorImageUrl, "authors");
-                            authorUpdate.setAuthorImageUrl(imageUrl);
-                        } catch (IOException e) {
-                            throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
-                        }
-                    }
                     authorUpdate = save(authorUpdate);
                     return authorUpdate;
                 } else {
@@ -112,6 +102,25 @@ public class AuthorServiceImpl implements IAuthorService {
                 // Log thông tin lỗi
                 e.printStackTrace();
                 throw new ObjectException("Author creation failed ");
+            }
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
+        }
+    }
+
+    @Override
+    public Author updateAuthorUrl(int id, MultipartFile authorImage )throws IOException {
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")){
+            Author author = authorRepository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("Author not found with id: " + id));
+            try {
+                String imageUrl = amazonS3Service.uploadFile(authorImage, "authors");
+                author.setAuthorImageUrl(imageUrl);
+                Author updatedAuthor = authorRepository.save(author);
+
+                return updatedAuthor;
+            } catch (IOException e) {
+                throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
             }
         } else {
             throw new ForbiddenException("You don't have permission to access this resource.");

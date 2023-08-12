@@ -4,6 +4,7 @@ import com.app.library.dto.PublisherDto;
 import com.app.library.exception.object.ForbiddenException;
 import com.app.library.exception.object.LibraryException;
 import com.app.library.exception.object.ObjectException;
+import com.app.library.exception.object.UserNotFoundException;
 import com.app.library.model.Book;
 import com.app.library.model.Publisher;
 import com.app.library.payload.PagedResponse;
@@ -61,7 +62,7 @@ public class PublisherServiceImpl implements IPublisherService {
     }
 
     @Override
-    public Publisher updatePublisher(int id, PublisherDto dto, MultipartFile publisherImageUrl) {
+    public Publisher updatePublisher(int id, PublisherDto dto) {
         if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
             try {
                 Optional<Publisher> existingPublisher = publisherRepository.findById(id);
@@ -74,14 +75,6 @@ public class PublisherServiceImpl implements IPublisherService {
                     publisherToUpdate.setPublisherIntroduce(dto.getPublisherIntroduce());
                     publisherToUpdate.setPublisherWebsiteUrl(dto.getPublisherWebsiteUrl());
 
-                    if (publisherImageUrl != null) {
-                        try {
-                            String imageUrl = amazonS3Service.uploadFile(publisherImageUrl, "publishers");
-                            publisherToUpdate.setPublisherImageUrl(imageUrl);
-                        } catch (IOException e) {
-                            throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
-                        }
-                    }
                     publisherToUpdate = publisherRepository.save(publisherToUpdate);
                     return  publisherToUpdate;
                 } else {
@@ -96,6 +89,25 @@ public class PublisherServiceImpl implements IPublisherService {
             throw new ForbiddenException("You don't have permission to access this resource.");
         }
 
+    }
+
+    @Override
+    public Publisher updateImagePublisher(int id, MultipartFile publisherImage) {
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")){
+            Publisher publisher = publisherRepository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("Author not found with id: " + id));
+            try {
+                String imageUrl = amazonS3Service.uploadFile(publisherImage, "publishers");
+                publisher.setPublisherImageUrl(imageUrl);
+                Publisher updatedPublisher = publisherRepository.save(publisher);
+
+                return updatedPublisher;
+            } catch (IOException e) {
+                throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
+            }
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
+        }
     }
 
     @Override

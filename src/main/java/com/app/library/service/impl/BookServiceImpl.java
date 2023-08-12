@@ -3,6 +3,7 @@ import com.app.library.dto.BookDto;
 import com.app.library.exception.object.ForbiddenException;
 import com.app.library.exception.object.LibraryException;
 import com.app.library.exception.object.ObjectException;
+import com.app.library.exception.object.UserNotFoundException;
 import com.app.library.model.Author;
 import com.app.library.model.Category;
 import com.app.library.model.Publisher;
@@ -76,7 +77,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
 
 
     @Override
-    public ResponseEntity<?> addBook(BookDto dto, MultipartFile bookImageLink) {
+    public ResponseEntity<?> addBook(BookDto dto) {
         if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
             try {
                 Optional<Book> existingBook = bookRepository.findByBookTitle(dto.getBookTitle());
@@ -92,14 +93,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
 
                     checkExistAuthors(dto,bookToUpdate);
 
-                    if (bookImageLink != null) {
-                        try {
-                            String bookUrl = amazonS3Service.uploadFile(bookImageLink, "books");
-                            bookToUpdate.setBookImageLink(bookUrl);
-                        } catch (IOException e) {
-                            throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update avatar");
-                        }
-                    }
+
 
                     bookToUpdate = save(bookToUpdate);
                     return new ResponseEntity<>(bookToUpdate, HttpStatus.CREATED);
@@ -113,14 +107,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
                 checkExistAuthors(dto,newBook);
                 BeanUtils.copyProperties(dto, newBook);
 
-                if (bookImageLink != null) {
-                    try {
-                        String bookUrl = amazonS3Service.uploadFile(bookImageLink, "books");
-                        newBook.setBookImageLink(bookUrl);
-                    } catch (IOException e) {
-                        throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update avatar");
-                    }
-                }
+
                 newBook = save(newBook);
                 dto.setBookId(newBook.getBookId());
 
@@ -179,7 +166,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
         }
     }
     @Override
-    public ResponseEntity<?> updateBook(int id, BookDto dto, MultipartFile bookImageLink) {
+    public ResponseEntity<?> updateBook(int id, BookDto dto) {
         if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
             try {
                 Optional<Book> existingBook = bookRepository.findById(id);
@@ -197,15 +184,6 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
                     checkExistPublisher(dto);
                     checkExistAuthors(dto, bookToUpdate);
 
-                    if (bookImageLink != null) {
-                        try {
-                            String bookUrl = amazonS3Service.uploadFile(bookImageLink, "books");
-                            bookToUpdate.setBookImageLink(bookUrl);
-                        } catch (IOException e) {
-                            throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
-                        }
-                    }
-
                     bookToUpdate = save(bookToUpdate);
                     return new ResponseEntity<>(bookToUpdate, HttpStatus.OK);
                 } else {
@@ -220,6 +198,25 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
             throw new ForbiddenException("You don't have permission to access this resource.");
         }
 
+    }
+
+    @Override
+    public Book updateImageBook(int id, MultipartFile bookImageLink) throws IOException {
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")){
+            Book book = bookRepository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("Author not found with id: " + id));
+            try {
+                String imageUrl = amazonS3Service.uploadFile(bookImageLink, "books");
+                book.setBookImageLink(imageUrl);
+                Book updatedBook = bookRepository.save(book);
+
+                return updatedBook;
+            } catch (IOException e) {
+                throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
+            }
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
+        }
     }
 
 
@@ -255,7 +252,6 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
             throw new ForbiddenException("You don't have permission to access this resource.");
         }
     }
-
 
 
     private Book findById(int id) {
@@ -349,6 +345,4 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
         return new PagedResponse<>(content, searchedBooks.getNumber(), searchedBooks.getSize(), searchedBooks.getTotalElements(),
                 searchedBooks.getTotalPages(), searchedBooks.isLast());
     }
-
-
 }

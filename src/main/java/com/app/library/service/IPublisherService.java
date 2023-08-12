@@ -13,6 +13,7 @@ import java.util.List;
 public interface IPublisherService {
     public ResponseEntity<?> getPublisher(int id);
     public PagedResponse<Publisher> getAllPublishers(int page, int size);
-    public Publisher updatePublisher(int id, PublisherDto dto, MultipartFile publisherImageUrl);
+    public Publisher updatePublisher(int id, PublisherDto dto);
+    public Publisher updateImagePublisher(int id, MultipartFile publisherImage);
     PagedResponse<Book> getBooksByPublisherId(int publisherId, int page, int size);
 }

@@ -7,6 +7,7 @@ import com.app.library.payload.PagedResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface IAuthorService {
@@ -14,7 +15,9 @@ public interface IAuthorService {
 
     public PagedResponse<Author> getAllAuthors(int page, int size);
 
-    public Author updateAuthor(int id, AuthorDto dto, MultipartFile authorImageUrl);
+    public Author updateAuthor(int id, AuthorDto dto);
+
+    public Author updateAuthorUrl(int id , MultipartFile authorImage) throws IOException;
 
     public ResponseEntity<?> deleteAuthor(int id);
 
