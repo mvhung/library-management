@@ -38,27 +38,62 @@ public class UserServiceImpl implements IUserService {
     private  PasswordEncoder passwordEncoder;
 
     public ResponseEntity<User> updateUser(int id, RegisterRequest updateUserRequest) {
-        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")
-                || SecurityUtil.hasCurrentUserAnyOfAuthorities("USER_PERMISSION") ){
-            Optional<User> userOptional = userRepository.findById(id);
-            if (!userOptional.isPresent()) {
-                throw new UserNotFoundException("User not found with ID: " + id);
-            }
+        Optional<String> currentUserLogin = SecurityUtil.getCurrentUserLogin();
 
-            User existingUser = userOptional.get();
-            existingUser.setFirstName(updateUserRequest.getFirstName());
-            existingUser.setLastName(updateUserRequest.getLastName());
-            existingUser.setUsername(updateUserRequest.getUsername());
-            existingUser.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
-            existingUser.setAddress(updateUserRequest.getAddress());
-            existingUser.setEmail(updateUserRequest.getEmail());
+        if (!currentUserLogin.isPresent()) {
+            throw new ForbiddenException("User unauthorized");
+        }
 
-            userRepository.save(existingUser);
-            return new ResponseEntity<>(existingUser,HttpStatus.OK);
-        } else {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (!userOptional.isPresent()) {
+            throw new UserNotFoundException("No find user : " + id);
+        }
+
+        User existingUser = userOptional.get();
+        String existingUserLogin = existingUser.getEmail();
+
+        if (!currentUserLogin.get().equals(existingUserLogin)
+                && !SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
+            throw new ForbiddenException("You don't have permission to access this resource. ");
+        }
+
+        existingUser.setFirstName(updateUserRequest.getFirstName());
+        existingUser.setLastName(updateUserRequest.getLastName());
+        existingUser.setUsername(updateUserRequest.getUsername());
+        existingUser.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
+        existingUser.setAddress(updateUserRequest.getAddress());
+        existingUser.setEmail(updateUserRequest.getEmail());
+
+        userRepository.save(existingUser);
+        return new ResponseEntity<>(existingUser, HttpStatus.OK);
+    }
+
+
+    @Override
+    public User updateAvatar(int id, MultipartFile avatarFile) throws IOException {
+        Optional<String> currentUserLogin = SecurityUtil.getCurrentUserLogin();
+
+        if (!currentUserLogin.isPresent()) {
+            throw new ForbiddenException("User unauthorized");
+        }
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("No find user : " + id));
+
+        if (!currentUserLogin.get().equals(user.getUsername())
+                && !SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
             throw new ForbiddenException("You don't have permission to access this resource.");
         }
 
+        try {
+            String imageUrl = amazonS3Service.uploadFile(avatarFile, "avatars");
+            user.setAvatarUrl(imageUrl);
+            User updatedUser = userRepository.save(user);
+
+            return updatedUser;
+        } catch (IOException e) {
+            throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
+        }
     }
 
     @Override
@@ -117,23 +152,5 @@ public class UserServiceImpl implements IUserService {
         return null;
     }
 
-    @Override
-    public User updateAvatar(int id, MultipartFile avatarFile) throws IOException {
-        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")
-                || SecurityUtil.hasCurrentUserAnyOfAuthorities("USER_PERMISSION")){
-            User user = userRepository.findById(id)
-                    .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-            try {
-                String imageUrl = amazonS3Service.uploadFile(avatarFile, "avatars");
-                user.setAvatarUrl(imageUrl);
-                User updatedUser = userRepository.save(user);
 
-                return updatedUser;
-            } catch (IOException e) {
-                throw new LibraryException(HttpStatus.BAD_REQUEST, "Failed to update image");
-            }
-        } else {
-            throw new ForbiddenException("You don't have permission to access this resource.");
-        }
-    }
 }
