@@ -9,6 +9,8 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class AuthenticationResponse {
+    @JsonProperty("username")
+    private String username;
     @JsonProperty("token")
     private String token;
     @JsonProperty("refresh_token")

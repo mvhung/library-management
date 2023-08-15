@@ -28,6 +28,8 @@ public class UserController {
         return userService.getUser(id);
     }
 
+
+
     @GetMapping
     public PagedResponse<User> listUsers(
             @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
@@ -50,7 +52,7 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    @RequestMapping(value = "delete/{id}",method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}",method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteUser(@PathVariable int id){
         return userService.deleteUser(id);
     }

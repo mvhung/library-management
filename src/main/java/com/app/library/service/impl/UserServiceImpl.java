@@ -5,6 +5,7 @@ import com.app.library.dto.UserDto;
 import com.app.library.exception.object.*;
 import com.app.library.model.Category;
 import com.app.library.model.User;
+import com.app.library.model.enum_class.RoleName;
 import com.app.library.payload.PagedResponse;
 import com.app.library.repository.UserRepository;
 import com.app.library.service.IUserService;
@@ -115,19 +116,40 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public ResponseEntity<?> getUser(int Id) {
+    public ResponseEntity<?> getUser(int id) {
         try {
-            User user = userRepository.findById(Id).orElseThrow();
-            if (user.getRoleName().name() == "ADMIN") {
-                throw new UserNotFoundException("You don't have permission to access this resource.");
+            Optional<User> userOptional = userRepository.findById(id);
+            if (!userOptional.isPresent()) {
+                throw new UserNotFoundException("No get detail user");
             }
+
+            User user = userOptional.get();
+            String currentUserLogin = SecurityUtil.getCurrentUserLogin().orElse(null);
+
+            if (currentUserLogin == null) {
+                throw new ForbiddenException("User unauthorized");
+            }
+
+            if (!currentUserLogin.equals(user.getEmail()) &&
+                    !SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
+                throw new ForbiddenException("You don't have permission to access this resource.");
+            }
+
+            if (user.getRoleName() == RoleName.ADMIN) {
+                throw new ForbiddenException("You don't have permission to access this resource.");
+            }
+
             UserDto userDto = new UserDto();
             BeanUtils.copyProperties(user, userDto);
             return new ResponseEntity<>(userDto, HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new UserNotFoundException("No get detail user");
         }
     }
+
+
 
     @Override
     public PagedResponse<User> listUsers(int page, int size) {

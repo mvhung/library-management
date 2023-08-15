@@ -1,7 +1,6 @@
 package com.app.library.service.impl;
-import com.app.library.exception.object.LibraryException;
+import com.app.library.exception.object.ForbiddenException;
 import com.app.library.model.enum_class.RoleName;
-import com.app.library.service.impl.AmazonS3Service;
 import com.app.library.auth.AuthenticationRequest;
 import com.app.library.auth.AuthenticationResponse;
 import com.app.library.auth.RegisterRequest;
@@ -18,15 +17,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.Optional;import org.springframework.security.core.AuthenticationException;
 
 @Service
 @RequiredArgsConstructor
@@ -67,18 +64,28 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        revokeAllUserTokens(user);
-        saveUserToken(user, jwtToken);
-        return AuthenticationResponse.builder().token(jwtToken).refreshToken(refreshToken).build();
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+            var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+            var jwtToken = jwtService.generateToken(user);
+            var refreshToken = jwtService.generateRefreshToken(user);
+            revokeAllUserTokens(user);
+            saveUserToken(user, jwtToken);
+            return AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .refreshToken(refreshToken)
+                    .build();
+
+        } catch (AuthenticationException e) {
+            // Xử lý khi email hoặc password không chính xác
+            throw new ForbiddenException("Invalid email or password");
+        }
+
     }
 
 

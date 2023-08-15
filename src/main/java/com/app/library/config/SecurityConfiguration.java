@@ -48,6 +48,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET,"/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("api/v1/authors/update-image/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -83,15 +83,14 @@ public class AuthorServiceImpl implements IAuthorService {
 
     @Override
     public Author updateAuthor(int id, AuthorDto dto) {
-        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
+        if (!SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION") ){
             try {
                 Optional<Author> existAuthor = authorRepository.findById(id);
 
                 if (existAuthor.isPresent()) {
                     Author authorUpdate = existAuthor.get();
-                    authorUpdate.setAuthorFullName(authorUpdate.getAuthorFullName() + dto.getAuthorFullName());
-                    authorUpdate.setAuthorIntroduce(authorUpdate.getAuthorIntroduce() + dto.getAuthorIntroduce());
-                    authorUpdate.setAuthorImageUrl(authorUpdate.getAuthorImageUrl() + dto.getAuthorImageUrl());
+                    authorUpdate.setAuthorFullName(dto.getAuthorFullName());
+                    authorUpdate.setAuthorIntroduce(dto.getAuthorIntroduce());
 
                     authorUpdate = save(authorUpdate);
                     return authorUpdate;
@@ -110,7 +109,8 @@ public class AuthorServiceImpl implements IAuthorService {
 
     @Override
     public Author updateAuthorUrl(int id, MultipartFile authorImage )throws IOException {
-        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")){
+
+        if (!SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")){
             Author author = authorRepository.findById(id)
                     .orElseThrow(() -> new UserNotFoundException("Author not found with id: " + id));
             try {
