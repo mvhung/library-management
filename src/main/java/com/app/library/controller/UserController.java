@@ -45,6 +45,10 @@ public class UserController {
         return userService.updateUser(id, updateUserRequest);
 
     }
+    @GetMapping("/user-info")
+    public ResponseEntity<?> getUserInfo() {
+        return userService.getUserInformation();
+    }
 
     @PostMapping("/update-avatar/{id}")
     public ResponseEntity<User> updateAvatar(@PathVariable int id, @RequestParam("avatarFile") MultipartFile avatarFile) throws IOException {

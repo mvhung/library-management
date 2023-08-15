@@ -19,6 +19,7 @@ public class UserDto implements Serializable {
     private String lastName;
     String address;
     String email;
+    RoleName roleName;
     private String avatarUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
