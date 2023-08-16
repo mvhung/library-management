@@ -72,31 +72,35 @@ public class UserServiceImpl implements IUserService {
 
     public ResponseEntity<?> getUserInformation() {
         try {
-            String currentUserLogin = SecurityUtil.getCurrentUserLogin().orElse(null);
-            if (currentUserLogin == null) {
+            Optional<String> currentUserLogin = SecurityUtil.getCurrentUserLogin();
+
+            if (!currentUserLogin.isPresent()) {
                 throw new ForbiddenException("User unauthorized");
             }
 
-            Optional<User> userOptional = userRepository.findByEmail(currentUserLogin);
+            Optional<User> userOptional = userRepository.findByEmail(currentUserLogin.get());
             if (!userOptional.isPresent()) {
-                throw new UserNotFoundException("No get detail user");
+                throw new UserNotFoundException("No find user");
             }
 
             User user = userOptional.get();
 
-            if (user.getRoleName() == RoleName.ADMIN) {
-                throw new ForbiddenException("You don't have permission to access this resource.");
+            if (!SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
+                if (!currentUserLogin.get().equals(user.getUsername())) {
+                    throw new ForbiddenException("You don't have permission to access this resource.");
+                }
             }
 
             UserDto userDto = new UserDto();
             BeanUtils.copyProperties(user, userDto);
             return new ResponseEntity<>(userDto, HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            throw e; // Re-throw the UserNotFoundException
+            throw e;
         } catch (Exception e) {
-            throw new UserNotFoundException("No get detail user");
+            throw new ForbiddenException("No get user detail");
         }
     }
+
     @Override
     public User updateAvatar(int id, MultipartFile avatarFile) throws IOException {
         Optional<String> currentUserLogin = SecurityUtil.getCurrentUserLogin();

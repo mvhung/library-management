@@ -86,15 +86,9 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
                     // Nếu sách đã tồn tại, chỉ cập nhật quantity và thông tin liên quan nếu có
                     Book bookToUpdate = existingBook.get();
                     bookToUpdate.setBookQuantity(bookToUpdate.getBookQuantity() + dto.getBookQuantity());
-
                     checkExistCategory(dto);
-
                     checkExistPublisher(dto);
-
                     checkExistAuthors(dto,bookToUpdate);
-
-
-
                     bookToUpdate = save(bookToUpdate);
                     return new ResponseEntity<>(bookToUpdate, HttpStatus.CREATED);
 
