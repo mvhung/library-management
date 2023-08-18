@@ -23,7 +23,7 @@ public class BookDto implements Serializable {
     int bookPublishedYear;
     int bookQuantity;
     String bookDescription;
-    private MultipartFile bookImageLink;
+    private String bookImageLink;
 
     List<Author> authors;
     Category category;

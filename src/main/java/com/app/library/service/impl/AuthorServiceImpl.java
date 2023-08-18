@@ -91,7 +91,7 @@ public class AuthorServiceImpl implements IAuthorService {
                     Author authorUpdate = existAuthor.get();
                     authorUpdate.setAuthorFullName(dto.getAuthorFullName());
                     authorUpdate.setAuthorIntroduce(dto.getAuthorIntroduce());
-
+                    authorUpdate.setAuthorImageUrl(dto.getAuthorImageUrl());
                     authorUpdate = save(authorUpdate);
                     return authorUpdate;
                 } else {

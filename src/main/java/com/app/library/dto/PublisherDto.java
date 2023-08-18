@@ -20,5 +20,5 @@ public class PublisherDto implements Serializable {
     String publisherName;
     String publisherIntroduce;
     String publisherWebsiteUrl;
-    private MultipartFile publisherImageUrl;
+    private String publisherImageUrl;
 }

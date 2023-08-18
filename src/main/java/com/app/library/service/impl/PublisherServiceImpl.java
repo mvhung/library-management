@@ -74,7 +74,7 @@ public class PublisherServiceImpl implements IPublisherService {
                     publisherToUpdate.setPublisherName(dto.getPublisherName());
                     publisherToUpdate.setPublisherIntroduce(dto.getPublisherIntroduce());
                     publisherToUpdate.setPublisherWebsiteUrl(dto.getPublisherWebsiteUrl());
-
+                    publisherToUpdate.setPublisherImageUrl(dto.getPublisherImageUrl());
                     publisherToUpdate = publisherRepository.save(publisherToUpdate);
                     return  publisherToUpdate;
                 } else {

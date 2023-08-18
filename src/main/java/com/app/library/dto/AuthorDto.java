@@ -15,5 +15,5 @@ public class AuthorDto implements Serializable {
     int authorId;
     String authorFullName;
     String authorIntroduce;
-    private MultipartFile authorImageUrl;
+    private String authorImageUrl;
 }

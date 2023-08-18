@@ -91,7 +91,6 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
                     checkExistAuthors(dto,bookToUpdate);
                     bookToUpdate = save(bookToUpdate);
                     return new ResponseEntity<>(bookToUpdate, HttpStatus.CREATED);
-
                 }
 
                 // Tạo mới sách và lưu vào cơ sở dữ liệu
@@ -101,10 +100,8 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
                 checkExistAuthors(dto,newBook);
                 BeanUtils.copyProperties(dto, newBook);
 
-
                 newBook = save(newBook);
                 dto.setBookId(newBook.getBookId());
-
 
                 return new ResponseEntity<>(dto, HttpStatus.CREATED);
 
@@ -173,6 +170,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
                     bookToUpdate.setBookQuantity(dto.getBookQuantity());
                     bookToUpdate.setBookDescription(dto.getBookDescription());
                     bookToUpdate.setBookPublishedYear(dto.getBookPublishedYear());
+                    bookToUpdate.setBookImageLink(dto.getBookImageLink());
                     // Cập nhật các thông tin liên quan khác từ dto
                     checkExistCategory(dto);
                     checkExistPublisher(dto);

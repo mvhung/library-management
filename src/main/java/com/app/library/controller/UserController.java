@@ -51,7 +51,8 @@ public class UserController {
     }
 
     @PostMapping("/update-avatar/{id}")
-    public ResponseEntity<User> updateAvatar(@PathVariable int id, @RequestParam("avatarFile") MultipartFile avatarFile) throws IOException {
+    public ResponseEntity<User> updateAvatar(@PathVariable int id,
+                                             @RequestParam("avatarFile") MultipartFile avatarFile) throws IOException {
         User updatedUser = userService.updateAvatar(id, avatarFile);
         return ResponseEntity.ok(updatedUser);
     }
