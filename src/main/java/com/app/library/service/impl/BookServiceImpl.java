@@ -215,6 +215,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
                 existingPublisher.setPublisherImageUrl(newPublisher.getPublisherImageUrl());
                 existingPublisher.setPublisherName(newPublisher.getPublisherName());
                 existingPublisher.setPublisherIntroduce(newPublisher.getPublisherIntroduce());
+                existingPublisher.setPublisherWebsiteUrl(newPublisher.getPublisherWebsiteUrl());
                 book.setPublisher(existingPublisher);
                 return true;
             }
