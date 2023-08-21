@@ -60,7 +60,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
     public PagedResponse<Book> getAllBooks(int page, int size) {
         AppUtils.validatePageNumberAndSize(page, size);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "updatedAt");
 
         Page<Book> books = bookRepository.findAll(pageable);
 
@@ -171,10 +171,11 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
                     bookToUpdate.setBookDescription(dto.getBookDescription());
                     bookToUpdate.setBookPublishedYear(dto.getBookPublishedYear());
                     bookToUpdate.setBookImageLink(dto.getBookImageLink());
-                    // Cập nhật các thông tin liên quan khác từ dto
-                    checkExistCategory(dto);
-                    checkExistPublisher(dto);
-                    checkExistAuthors(dto, bookToUpdate);
+                    // Kiểm tra và cập nhật thông tin liên quan
+                    boolean categoryChanged = checkAndUpdateCategory(dto, bookToUpdate);
+                    boolean publisherChanged = checkAndUpdatePublisher(dto, bookToUpdate);
+                    boolean authorsChanged = checkAndUpdateAuthors(dto, bookToUpdate);
+//
 
                     bookToUpdate = save(bookToUpdate);
                     return new ResponseEntity<>(bookToUpdate, HttpStatus.OK);
@@ -191,6 +192,67 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
         }
 
     }
+
+    private boolean checkAndUpdateCategory(BookDto dto, Book book) {
+        if (dto.getCategory() != null) {
+            Category newCategory = dto.getCategory();
+            if (!newCategory.equals(book.getCategory())) {
+                checkExistCategory(dto);
+                book.setCategory(dto.getCategory());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkAndUpdatePublisher(BookDto dto, Book book) {
+        if (dto.getPublisher() != null) {
+            Publisher newPublisher = dto.getPublisher();
+            Publisher existingPublisher = book.getPublisher();
+
+            if (!newPublisher.equals(existingPublisher)) {
+                checkExistPublisher(dto);
+                existingPublisher.setPublisherImageUrl(newPublisher.getPublisherImageUrl());
+                existingPublisher.setPublisherName(newPublisher.getPublisherName());
+                existingPublisher.setPublisherIntroduce(newPublisher.getPublisherIntroduce());
+                book.setPublisher(existingPublisher);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkAndUpdateAuthors(BookDto dto, Book book) {
+        if (dto.getAuthors() != null && !dto.getAuthors().isEmpty()) {
+            List<Author> updatedAuthors = new ArrayList<>();
+            boolean authorsChanged = false;
+
+            for (Author author : dto.getAuthors()) {
+                Optional<Author> existingAuthor = authorRepository.findByAuthorFullName(author.getAuthorFullName());
+                if (existingAuthor.isPresent()) {
+                    Author existing = existingAuthor.get();
+                    if (!existing.getAuthorImageUrl().equals(author.getAuthorImageUrl())) {
+                        existing.setAuthorImageUrl(author.getAuthorImageUrl());
+                        existing.setAuthorIntroduce(author.getAuthorIntroduce());
+                        existing.setAuthorFullName(author.getAuthorFullName());
+                        authorRepository.save(existing);
+                    }
+                    updatedAuthors.add(existing);
+                } else {
+                    authorRepository.save(author);
+                    updatedAuthors.add(author);
+                    authorsChanged = true;
+                }
+            }
+
+            if (authorsChanged) {
+                book.setAuthors(updatedAuthors);
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public Book updateImageBook(int id, MultipartFile bookImageLink) throws IOException {
@@ -300,7 +362,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
     public PagedResponse<Book> searchBookByAuthor(String authorName, int page, int size) {
         AppUtils.validatePageNumberAndSize(page, size);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "updatedAt");
 
         Page<Book> searchedBooks = bookRepository.searchBooksByAuthorName(authorName, pageable);
 
@@ -314,7 +376,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
     public PagedResponse<Book> searchBookByCategory(String categoryName, int page, int size) {
         AppUtils.validatePageNumberAndSize(page, size);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "updatedAt");
 
         Page<Book> searchedBooks = bookRepository.searchBooksByCategoryName(categoryName, pageable);
 
@@ -328,7 +390,7 @@ public class BookServiceImpl implements com.app.library.service.IBookService {
     public PagedResponse<Book> searchBookByPublisher(String publisherName, int page, int size) {
         AppUtils.validatePageNumberAndSize(page, size);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "updatedAt");
 
         Page<Book> searchedBooks = bookRepository.searchBooksByPublisherName(publisherName, pageable);
 

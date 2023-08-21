@@ -1,15 +1,13 @@
 package com.app.library.controller;
 
 import com.amazonaws.auth.policy.Resource;
-import com.app.library.auth.AuthenticationRequest;
-import com.app.library.auth.AuthenticationResponse;
+import com.app.library.auth.*;
 import com.app.library.exception.object.EmailAlreadyExistsException;
 import com.app.library.exception.object.UserNotFoundException;
 import com.app.library.model.User;
 import com.app.library.repository.UserRepository;
 import com.app.library.service.impl.AmazonS3Service;
 import com.app.library.service.impl.AuthenticationService;
-import com.app.library.auth.RegisterRequest;
 import com.app.library.service.impl.LogoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,6 +47,7 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
+
 
     @PostMapping("/refresh-token")
     public void refreshToken(

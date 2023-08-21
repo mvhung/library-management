@@ -19,10 +19,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -197,6 +199,34 @@ public class UserServiceImpl implements IUserService {
                     users.getTotalPages(), users.isLast());
         } else {
             throw new ForbiddenException("You don't have permission to access this resource.");
+        }
+    }
+
+    public UserDetails loadUserByEmail(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return new org.springframework.security.core.userdetails.User(
+                    user.getEmail(),
+                    user.getPassword(),
+                    new ArrayList<>()
+            );
+        } else {
+            return null;
+        }
+    }
+
+    public UserDetails loadUserByUsername(String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return new org.springframework.security.core.userdetails.User(
+                    user.getUsername(),
+                    user.getPassword(),
+                    new ArrayList<>()
+            );
+        } else {
+            return null;
         }
     }
 

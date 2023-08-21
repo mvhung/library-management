@@ -17,13 +17,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Optional;import org.springframework.security.core.AuthenticationException;
+import java.util.Optional;
+import org.springframework.security.core.AuthenticationException;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +38,8 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     @Autowired
     private  final AmazonS3Service amazonS3Service;
+    @Autowired
+    private final UserServiceImpl userService;
 
     public AuthenticationResponse register(RegisterRequest request) {
         Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
@@ -138,6 +143,12 @@ public class AuthenticationService {
             }
         }
     }
+
+
+
+
+
+
     public AuthenticationResponse registerAdmin(RegisterRequest request) {
         Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
         if (existingUser.isPresent()) {
@@ -161,4 +172,7 @@ public class AuthenticationService {
                 .refreshToken(refreshToken)
                 .build();
     }
+
+
+
 }

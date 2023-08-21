@@ -49,7 +49,7 @@ public class CategoryServiceImpl implements ICategoryService {
     public PagedResponse<Category> getAllCategories(int page, int size) {
         AppUtils.validatePageNumberAndSize(page, size);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "updatedAt");
 
         Page<Category> categories = categoryRepository.findAll(pageable);
 
@@ -148,7 +148,7 @@ public class CategoryServiceImpl implements ICategoryService {
 
         AppUtils.validatePageNumberAndSize(page, size);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "updatedAt");
 
         // Lấy danh sách sách thuộc publisher theo phân trang
         Page<Book> books = bookRepository.findByCategory(category, pageable);
