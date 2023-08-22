@@ -28,9 +28,9 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
     @Autowired
     private UserRepository userRepository;
 
-    // Info Loan by UserId
     @Override
     public ResponseEntity<?> infoLoan(int Id) {
+        // Info Loan by UserId
         List<Loan> loans = loanRepository.findAll();
         List<Loan> loan = new ArrayList<Loan>();
         for (Loan loan1 : loans) {
@@ -38,7 +38,27 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
                 loan.add(loan1);
             }
         }
-        return new ResponseEntity<>(loan, HttpStatus.OK);    
+        return new ResponseEntity<>(loan, HttpStatus.OK);
+    }
+
+    // Liet ke danh sach nguoi muon va id tuong ung cua nguoi muon, kiem tra neu 2
+    // nguoi giong nhau thi lay 1 nguoi
+    @Override
+    public ResponseEntity<?> listUserBorrowing() {
+        List<Loan> loans = loanRepository.findAll();
+        Set<UserBorrowing> uniqueUsers = new HashSet<>();
+        for (Loan loan : loans) {
+            User user = userRepository.findById(loan.getUserId())
+                    .orElseThrow(() -> new RuntimeException("Cannot find user with id: " + loan.getUserId()));
+            UserBorrowing userBorrowing = new UserBorrowing();
+            userBorrowing.setUserId(user.getUserId());
+            userBorrowing.setUserName(user.getUsername());
+            userBorrowing.setFirstName(user.getFirstName());
+            userBorrowing.setLastName(user.getLastName());
+            uniqueUsers.add(userBorrowing);
+        }
+        List<UserBorrowing> users = new ArrayList<>(uniqueUsers);
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
     public PagedResponse<Loan> getAllLoans(int page, int size) {
         AppUtils.validatePageNumberAndSize(page, size);
@@ -54,157 +74,138 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
     }
     @Override
     public ResponseEntity<?> deleteLoan(int Id) {
-        // Loan loan = loanRepository.findById(Id).orElseThrow(() -> new
-        // RuntimeException("can't find loan id:" + Id));
-        // Loan loan = ListAllLoans.stream().filter(l -> l.getLoanId() ==
-        // Id).findFirst()
-        // .orElseThrow(() -> new RuntimeException("can't find loan id:" + Id));
-        // List<Book> bookList = loan.getBooks();
-        // for (Book book : bookList) {
-        // int bookId = book.getBookId();
-        // // Lấy số lượng sách hiện tại trong bookRepository và cộng với số sách hiện
-        // tại
-        // // trong loan tương ứng với id
-        // int currentQuantity =
-        // bookRepository.findById(bookId).get().getBookQuantity();
-        // int loanBookQuantity = book.getBookQuantity();
-        // int totalQuantity = currentQuantity + loanBookQuantity;
-        // // Cập nhật lại số lượng sách trong bookRepository
-        // bookRepository.findById(bookId).get().setBookQuantity(totalQuantity);
-        // }
-        // loan.setBooks(null);
-        // loan.setUser(null);
-        // loanRepository.deleteById(Id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
+            // Delete by Id User
+            List<Loan> loans = loanRepository.findAll();
+            for (Loan loan : loans) {
+                if (loan.getLoanId() == Id) {
+                    // From Id User, get Id Book and Quantity
+                    int bookId = loan.getBookId();
+                    int bookQuantity = loan.getBookQuantity();
+                    // Get Book by Id
+                    Book book = bookRepository.findById(bookId)
+                            .orElseThrow(() -> new RuntimeException("Cannot find book with id: " + bookId));
+                    // Update Book Quantity
+                    book.setBookQuantity(book.getBookQuantity() + bookQuantity);
+                    bookRepository.save(book);
+                    // Delete Loan
+                    loanRepository.deleteById(loan.getLoanId());
+                }
+            }
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Access denied", HttpStatus.FORBIDDEN);
     }
 
+    // Cap nhat lai so luong sach hoac loai sach trong truong hop muon them sach
+    // hoac tra sach theo Id User
     @Override
     public ResponseEntity<?> updateLoan(int Id, LoanDto newLoanDto) {
-        // if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
 
-        //     Optional<Loan> loan = loanRepository.findById(Id);
-        //     if (!loan.isPresent()) {
-        //         throw new RuntimeException("Cannot find loan with id: " + Id);
-        //     }
+            List<Loan> loans = loanRepository.findAll();
+            List<Loan> loan = new ArrayList<Loan>();
+            for (Loan loan1 : loans) {
+                if (loan1.getUserId() == Id) {
+                    loan.add(loan1);
+                }
+            }
 
-        //     Loan loan1 = loan.get();
+            for (Loan loan1 : loan) {
+                if (loan1.getLoanDueDate().isBefore(LocalDateTime.now())) {
+                    throw new RuntimeException("Cannot update loan with id: " + loan1.getLoanId());
+                }
+            }
 
-        //     // Update by user with date
-        //     loan1.setUpdatedAt(LocalDateTime.now());
-        //     loan1.setUpdatedBy(SecurityUtil.currentUser().get().getUsername());
+            for (Loan loan1 : loan) {
+                if (newLoanDto.getUser().getAddress() != null) {
+                    User user = userRepository.findById(loan1.getUserId())
+                            .orElseThrow(() -> new RuntimeException("Cannot find user with id: " + loan1.getUserId()));
+                    user.setAddress(newLoanDto.getUser().getAddress());
+                    userRepository.save(user);
+                    loan1.setUserAddress(newLoanDto.getUser().getAddress());
+                }
+            }
 
-        //     User user = loan1.getUser();
-        //     if (user != null) {
-        //         if (newLoanDto.getUser().getUserId() == user.getUserId()) {
-        //             if (newLoanDto.getUser().getAddress() != user.getAddress()) {
-        //                 user.setAddress(newLoanDto.getUser().getAddress());
-        //             }
-        //             userRepository.save(user);
-        //         }
-        //     } else {
-        //         user = userRepository.findById(newLoanDto.getUser().getUserId())
-        //                 .orElseThrow(() -> new RuntimeException(
-        //                         "Cannot find user with id: " + newLoanDto.getUser().getUserId()));
-        //         loan1.setUser(user);
-        //         user.setAddress(newLoanDto.getUser().getAddress());
-        //         userRepository.save(user);
-        //     }
+            for (Loan loan1 : loan) {
+                for (BookDto bookDto : newLoanDto.getBooks()) {
+                    if (bookDto.getBookId() == loan1.getBookId()) {
+                        if (bookDto.getBookQuantity() > loan1.getBookQuantity()
+                                + bookRepository.findById(bookDto.getBookId()).get().getBookQuantity()) {
+                            throw new RuntimeException("Cannot loan book with id: " + bookDto.getBookId());
+                        }
+                        loan1.setBookQuantity(bookDto.getBookQuantity());
 
-            // List<Book> books = loan1.getBooks();
-            // if (books != null) {
-            // for (Book bookLoan : books) {
-            // for (BookDto booknewLoan : newLoan.getBooks()) {
-            // if (booknewLoan.getBookId() == bookLoan.getBookId()) {
-            // int totalQuantity = bookLoan.getBookQuantity()
-            // + bookRepository.findById(booknewLoan.getBookId()).get().getBookQuantity();
-            // if (booknewLoan.getBookQuantity() < totalQuantity) {
-            // bookLoan.setBookQuantity(booknewLoan.getBookQuantity());
-            // bookRepository.findById(bookLoan.getBookId()).get().setBookQuantity(totalQuantity
-            // - booknewLoan.getBookQuantity());
-            // } else {
-            // throw new RuntimeException(
-            // "Cannot update book with id: " + booknewLoan.getBookId());
-            // }
-            // } else {
-            // books.add(bookRepository.findById(booknewLoan.getBookId())
-            // .orElseThrow(() -> new RuntimeException(
-            // "Cannot find book with id: " + booknewLoan.getBookId())));
-            // bookLoan.setBookId(booknewLoan.getBookId());
-            // bookLoan.setBookQuantity(booknewLoan.getBookQuantity());
-            // bookLoan.setBookTitle(booknewLoan.getBookTitle());
-            // bookRepository.findById(booknewLoan.getBookId()).get().setBookQuantity(
-            // bookRepository.findById(booknewLoan.getBookId()).get().getBookQuantity()
-            // - booknewLoan.getBookQuantity());
-            // }
-            // }
-            // }
-            // } else {
-            // List<Book> book = new ArrayList<Book>();
-            // for (BookDto booknewLoan : newLoan.getBooks()) {
-            // Book newBook = bookRepository.findById(booknewLoan.getBookId())
-            // .orElseThrow(() -> new RuntimeException(
-            // "Cannot find book with id: " + booknewLoan.getBookId()));
-            // book.add(newBook);
-            // }
-            // loan1.setBooks(books);
-            // }
+                    }
+                }
+            }
 
-        //     loanRepository.save(loan1);
-        //     return new ResponseEntity<>(loan1, HttpStatus.OK);
-        // }
-        return null;
+        }
+
+        return new ResponseEntity<>("Access denied", HttpStatus.FORBIDDEN);
+
     }
 
     @Override
-    public ResponseEntity<?> newLoan(LoanDto newLoanDto) {
+    public ResponseEntity<?> newLoan(List<LoanDto> newLoanDtos) {
         if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
-
-            boolean flag = false;
             List<Loan> loans = new ArrayList<Loan>();
+            for (LoanDto newLoanDto : newLoanDtos) {
+                boolean flag = false;
 
-            // Set user
-            User newUser = userRepository.findById(newLoanDto.getUser().getUserId())
-                    .orElseThrow(() -> new RuntimeException(
-                            "Cannot find user with id: " + newLoanDto.getUser().getUserId()));
-            if (newLoanDto.getUser().getAddress() != null) {
-                newUser.setAddress(newLoanDto.getUser().getAddress());
-                userRepository.save(newUser);
-            }
-
-            // Check book quantity
-            for (BookDto bookDto : newLoanDto.getBooks()) {
-                Book newBook = bookRepository.findById(bookDto.getBookId())
-                        .orElseThrow(() -> new RuntimeException("Cannot find book with id: " + bookDto.getBookId()));
-                if (bookDto.getBookQuantity() > newBook.getBookQuantity()) {
-                    throw new RuntimeException("Not enough book with id: " + bookDto.getBookId());
-                } else {
-                    flag = true;
+                // Set user
+                User newUser = userRepository.findById(newLoanDto.getUser().getUserId())
+                        .orElseThrow(() -> new RuntimeException(
+                                "Cannot find user with id: " + newLoanDto.getUser().getUserId()));
+                if (newLoanDto.getUser().getAddress() != null) {
+                    newUser.setAddress(newLoanDto.getUser().getAddress());
+                    userRepository.save(newUser);
                 }
-                newBook.setBookQuantity(newBook.getBookQuantity() - bookDto.getBookQuantity());
-                bookRepository.save(newBook);
-            }
 
-            if (flag == false) {
-                throw new RuntimeException("Not enough book with id: " + newLoanDto.getBooks().get(0).getBookId());
-            } else {
-                // Add user and books to loan
+                // Check book quantity
                 for (BookDto bookDto : newLoanDto.getBooks()) {
-                    Loan loan = new Loan();
-                    loan.setUserId(newLoanDto.getUser().getUserId());
-                    loan.setLoanDueDate(newLoanDto.getLoanDueDate());
-                    loan.setBookTitle(bookRepository.findById(bookDto.getBookId()).get().getBookTitle());
-                    loan.setUserName(userRepository.findById(newLoanDto.getUser().getUserId()).get().getUsername());
-                    loan.setUserAddress(userRepository.findById(newLoanDto.getUser().getUserId()).get().getAddress());
-                    loan.setCreatedAt(LocalDateTime.now());
-                    loan.setCreatedBy(SecurityUtil.currentUser().get().getUsername());
-                    loan.setBookId(bookDto.getBookId());
-                    loan.setBookQuantity(bookDto.getBookQuantity());
-                    loans.add(loan);
+                    Book newBook = bookRepository.findById(bookDto.getBookId())
+                            .orElseThrow(
+                                    () -> new RuntimeException("Cannot find book with id: " + bookDto.getBookId()));
+                    if (bookDto.getBookQuantity() > newBook.getBookQuantity()) {
+                        throw new RuntimeException("Cannot loan book with id: " + bookDto.getBookId());
+                    } else {
+                        flag = true;
+                    }
+                    newBook.setBookQuantity(newBook.getBookQuantity() - bookDto.getBookQuantity());
+                    bookRepository.save(newBook);
                 }
+
+                if (flag == false) {
+                    throw new RuntimeException("Cannot loan book");
+                } else {
+                    // Add user and books to loan
+                    for (BookDto bookDto : newLoanDto.getBooks()) {
+                        Loan loan = new Loan();
+                        loan.setUserId(newLoanDto.getUser().getUserId());
+                        
+                        if (bookDto.getDayLoan() != 0) {
+                            loan.setLoanDueDate(LocalDateTime.now().plusDays(bookDto.getDayLoan()));
+                        } else {
+                            loan.setLoanDueDate(LocalDateTime.now().plusDays(14));
+                        }
+                    
+                        loan.setBookTitle(bookRepository.findById(bookDto.getBookId()).get().getBookTitle());
+                        loan.setUserName(userRepository.findById(newLoanDto.getUser().getUserId()).get().getUsername());
+                        loan.setUserAddress(
+                                userRepository.findById(newLoanDto.getUser().getUserId()).get().getAddress());
+                        loan.setCreatedAt(LocalDateTime.now());
+                        loan.setCreatedBy(SecurityUtil.currentUser().get().getUsername());
+                        loan.setBookId(bookDto.getBookId());
+                        loan.setBookQuantity(bookDto.getBookQuantity());
+                        loan.setBookImageLink(
+                                bookRepository.findById(bookDto.getBookId()).get().getBookImageLink());
+                        loans.add(loan);
+                    }
+                }
+
+                flag = false;
             }
-
-            flag = false;
-
             // Lưu loans vào cơ sở dữ liệu
             loanRepository.saveAll(loans);
             return new ResponseEntity<>(loans, HttpStatus.OK);

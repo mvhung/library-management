@@ -17,7 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoanDto implements Serializable {
-    LocalDateTime loanDueDate;
     UserDto user;
-    List <BookDto> books;
+    List<BookDto> books;
 }
