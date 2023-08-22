@@ -88,7 +88,7 @@ public class UserServiceImpl implements IUserService {
             User user = userOptional.get();
 
             if (!SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
-                if (!currentUserLogin.get().equals(user.getUsername())) {
+                if (!currentUserLogin.get().equals(user.getEmail())) {
                     throw new ForbiddenException("You don't have permission to access this resource.");
                 }
             }
@@ -182,7 +182,22 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
+    public PagedResponse<User> searchUser(String keyword, int page, int size) {
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")){
+            AppUtils.validatePageNumberAndSize(page, size);
 
+            Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+            Page<User> users = userRepository.searchUsers(keyword, pageable);
+
+            List<User> content = users.getNumberOfElements() == 0 ? Collections.emptyList() : users.getContent();
+
+            return new PagedResponse<>(content, users.getNumber(), users.getSize(), users.getTotalElements(),
+                    users.getTotalPages(), users.isLast());
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
+        }
+    }
 
     @Override
     public PagedResponse<User> listUsers(int page, int size) {

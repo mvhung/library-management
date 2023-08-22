@@ -3,6 +3,7 @@ package com.app.library.controller;
 import com.app.library.auth.RegisterRequest;
 import com.app.library.dto.UserDto;
 import com.app.library.exception.object.LibraryException;
+import com.app.library.model.Book;
 import com.app.library.model.Category;
 import com.app.library.model.User;
 import com.app.library.payload.PagedResponse;
@@ -49,6 +50,19 @@ public class UserController {
     public ResponseEntity<?> getUserInfo() {
         return userService.getUserInformation();
     }
+
+    @GetMapping("/search")
+    public PagedResponse<User>
+            searchUsers(
+            @RequestParam("keyword") String keyword,
+            @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
+            @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size)
+    {
+
+
+        return userService.searchUser(keyword, page, size);
+    }
+
 
     @PostMapping("/update-avatar/{id}")
     public ResponseEntity<User> updateAvatar(@PathVariable int id,
