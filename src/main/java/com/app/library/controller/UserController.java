@@ -5,6 +5,7 @@ import com.app.library.dto.UserDto;
 import com.app.library.exception.object.LibraryException;
 import com.app.library.model.Book;
 import com.app.library.model.Category;
+import com.app.library.model.Loan;
 import com.app.library.model.User;
 import com.app.library.payload.PagedResponse;
 import com.app.library.service.impl.UserServiceImpl;
@@ -74,5 +75,14 @@ public class UserController {
     @RequestMapping(value = "/{id}",method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteUser(@PathVariable int id){
         return userService.deleteUser(id);
+    }
+
+    @GetMapping("/loans/{id}")
+    public ResponseEntity<PagedResponse<Loan>> getLoansByUserId(
+            @PathVariable("id") int userId,
+            @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
+            @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
+        PagedResponse<Loan> loans = userService.getLoansByUserId(userId, page, size);
+        return ResponseEntity.ok(loans);
     }
 }

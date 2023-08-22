@@ -61,6 +61,8 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+
+
     public PagedResponse<Loan> getAllLoans(int page, int size) {
         AppUtils.validatePageNumberAndSize(page, size);
 
@@ -73,6 +75,8 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
         return new PagedResponse<>(content, loans.getNumber(), loans.getSize(), loans.getTotalElements(),
                 loans.getTotalPages(), loans.isLast());
     }
+
+
     @Override
     public ResponseEntity<?> deleteLoan(int Id) {
         if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {

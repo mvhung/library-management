@@ -31,6 +31,8 @@ public class LoanController {
         return loanService.getAllLoans(page, size);
     }
 
+
+
     @DeleteMapping(value = "/del/{id}")
     public ResponseEntity<?> deleteLoan(@PathVariable("id") int id) {
         return loanService.deleteLoan(id);
