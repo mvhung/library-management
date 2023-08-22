@@ -21,8 +21,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "LOWER(u.username) LIKE %:keyword%")
     Page<User> searchUsers(@Param("keyword") String keyword, Pageable pageable);
 
-
-
     default User getUser(User currentUser) {
         return getUserByName(currentUser.getUsername());
     }
