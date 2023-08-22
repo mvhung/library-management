@@ -1,15 +1,15 @@
 package com.app.library.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
-import java.util.Date;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
@@ -18,11 +18,31 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "loans")
 public class Loan {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "lo_id")
+    @Column(name = "loan_id", nullable = false)
     private int loanId;
+
+    @Column(name = "book_id")
+    private int bookId;
+
+    @Column(name = "user_id")
+    private int userId;
+
+    @Column(name = "user_name")
+    private String userName;
+
+    @Column(name = "user_address")
+    private String userAddress;
+
+    @Column(name = "loan_due_date")
+    private LocalDateTime loanDueDate;
+
+    @Column(name = "book_title")
+    private String bookTitle;
+
+    @Column(name = "book_quantity")
+    private int bookQuantity;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -42,16 +62,4 @@ public class Loan {
     public void prePersist() {
         createdAt = LocalDateTime.now();
     }
-
-    @Column(name = "lo_due_date")
-    private LocalDateTime loanDueDate;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "us_id")
-    private User user;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "bo_id")
-    private Book book;
-
 }

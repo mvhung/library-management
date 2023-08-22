@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.List;
 
 /**
  * DTO for {@link Loan}
@@ -17,8 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoanDto implements Serializable {
-    int loanId;
     LocalDateTime loanDueDate;
     UserDto user;
-    BookDto book;
+    List <BookDto> books;
 }
