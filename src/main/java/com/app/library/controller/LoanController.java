@@ -46,8 +46,8 @@ public class LoanController {
     }
 
     @PostMapping(value = "/new")
-    public ResponseEntity<?> newLoan(@RequestBody LoanDto newLoanDto) {
-        ResponseEntity<?> loan = loanService.newLoan((List<LoanDto>) newLoanDto);
+    public ResponseEntity<?> newLoan(@RequestBody List<LoanDto> newLoanDto) {
+        ResponseEntity<?> loan = loanService.newLoan(newLoanDto);
         return new ResponseEntity<>(loan, HttpStatus.OK);
     }
 
