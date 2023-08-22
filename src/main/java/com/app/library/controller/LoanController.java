@@ -3,6 +3,9 @@ package com.app.library.controller;
 import com.app.library.dto.LoanDto;
 import com.app.library.model.*;
 import com.app.library.service.impl.LoanServiceImpl;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +23,11 @@ public class LoanController {
         return loanService.infoLoan(id);
     }
 
+    @GetMapping("/listUserBorrowing")
+    public ResponseEntity<?> listUserBorrowing() {
+        return loanService.listUserBorrowing();
+    }
+
     @DeleteMapping(value = "/del/{id}")
     public ResponseEntity<?> deleteLoan(@PathVariable("id") int id) {
         return loanService.deleteLoan(id);
@@ -35,7 +43,7 @@ public class LoanController {
     }
 
     @PostMapping(value = "/new")
-    public ResponseEntity<?> newLoan(@RequestBody LoanDto newLoanDto) {
+    public ResponseEntity<?> newLoan(@RequestBody List<LoanDto> newLoanDto) {
         ResponseEntity<?> loan = loanService.newLoan(newLoanDto);
         return new ResponseEntity<>(loan, HttpStatus.OK);
     }

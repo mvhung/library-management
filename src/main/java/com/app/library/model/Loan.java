@@ -44,6 +44,9 @@ public class Loan {
     @Column(name = "book_quantity")
     private int bookQuantity;
 
+    @Column(name = "book_image_link")
+    private String bookImageLink;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -57,9 +60,4 @@ public class Loan {
     @LastModifiedBy
     @Column(name = "updated_by")
     private String updatedBy;
-
-    @PrePersist
-    public void prePersist() {
-        createdAt = LocalDateTime.now();
-    }
 }
