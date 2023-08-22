@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "/api/v1/loans")
 @CrossOrigin(origins = "*")
@@ -45,7 +47,7 @@ public class LoanController {
 
     @PostMapping(value = "/new")
     public ResponseEntity<?> newLoan(@RequestBody LoanDto newLoanDto) {
-        ResponseEntity<?> loan = loanService.newLoan(newLoanDto);
+        ResponseEntity<?> loan = loanService.newLoan((List<LoanDto>) newLoanDto);
         return new ResponseEntity<>(loan, HttpStatus.OK);
     }
 

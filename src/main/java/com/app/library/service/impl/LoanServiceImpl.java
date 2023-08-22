@@ -60,6 +60,7 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
         List<UserBorrowing> users = new ArrayList<>(uniqueUsers);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
+
     public PagedResponse<Loan> getAllLoans(int page, int size) {
         AppUtils.validatePageNumberAndSize(page, size);
 
