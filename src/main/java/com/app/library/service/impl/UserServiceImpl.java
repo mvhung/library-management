@@ -260,7 +260,7 @@ public class UserServiceImpl implements IUserService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
 
-        Page<Loan> loans = loanRepository.findByUser(userId, pageable);
+        Page<Loan> loans = loanRepository.findByUserId(userId, pageable);
 
         List<Loan> content = loans.getNumberOfElements() == 0 ? Collections.emptyList() : loans.getContent();
 

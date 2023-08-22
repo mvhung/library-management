@@ -12,5 +12,5 @@ import java.util.List;
 
 @Repository
 public interface LoanRepository extends JpaRepository<Loan, Integer> {
-    Page<Loan> findByUser(int userId , Pageable pageable);
+    Page<Loan> findByUserId(int userId , Pageable pageable);
 }
