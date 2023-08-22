@@ -25,6 +25,9 @@ public class JwtService {
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
 
+    @Value("360000")
+    private long passwordResetExpiration;
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -45,11 +48,26 @@ public class JwtService {
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
+
+
+    public String generatePasswordResetToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        // Add custom claims if needed
+        return buildToken(claims, userDetails, passwordResetExpiration);
+    }
+
+    public boolean isPasswordResetTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    }
+
     public String generateRefreshToken(
             UserDetails userDetails
     ) {
         return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
+
+
 
     private String buildToken(
             Map<String, Object> extraClaims,

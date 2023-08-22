@@ -4,9 +4,11 @@ import com.app.library.auth.RegisterRequest;
 import com.app.library.dto.UserDto;
 import com.app.library.exception.object.*;
 import com.app.library.model.Category;
+import com.app.library.model.Token;
 import com.app.library.model.User;
 import com.app.library.model.enum_class.RoleName;
 import com.app.library.payload.PagedResponse;
+import com.app.library.repository.TokenRepository;
 import com.app.library.repository.UserRepository;
 import com.app.library.service.IUserService;
 import com.app.library.utils.AppUtils;
@@ -19,10 +21,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +41,8 @@ public class UserServiceImpl implements IUserService {
     private AmazonS3Service amazonS3Service;
     @Autowired
     private  PasswordEncoder passwordEncoder;
+    @Autowired
+    private TokenRepository tokenRepository;
 
     public ResponseEntity<User> updateUser(int id, RegisterRequest updateUserRequest) {
         Optional<String> currentUserLogin = SecurityUtil.getCurrentUserLogin();
@@ -86,7 +92,7 @@ public class UserServiceImpl implements IUserService {
             User user = userOptional.get();
 
             if (!SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
-                if (!currentUserLogin.get().equals(user.getUsername())) {
+                if (!currentUserLogin.get().equals(user.getEmail())) {
                     throw new ForbiddenException("You don't have permission to access this resource.");
                 }
             }
@@ -130,20 +136,33 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ResponseEntity<?> deleteUser(int id) {
-        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")){
-            Optional<User> user = userRepository.findById(id);
-            if(user.isPresent()){
-                userRepository.deleteById(id);
-                return new ResponseEntity<>(user,HttpStatus.OK);
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
+            try {
+                Optional<User> userOptional = userRepository.findById(id);
 
-            } else{
-                return new ResponseEntity<>(new User(),HttpStatus.NOT_FOUND);
+                if (userOptional.isPresent()) {
+                    User user = userOptional.get();
+
+                    // Check if the user is an admin
+                    if (user.getRoleName() == RoleName.ADMIN) {
+                        throw new ForbiddenException("You don't have permission to delete an admin user.");
+                    }
+
+                    List<Token> tokens = user.getTokens();
+                    tokenRepository.deleteAll(tokens);
+
+                    userRepository.deleteById(id);
+
+                    return new ResponseEntity<>("User with Id " + id + " was deleted", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
+                }
+            } catch (Exception e) {
+                throw new ObjectException("Deleted user failed.");
             }
-
         } else {
             throw new ForbiddenException("You don't have permission to access this resource.");
         }
-
     }
 
     @Override
@@ -180,7 +199,22 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
+    public PagedResponse<User> searchUser(String keyword, int page, int size) {
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")){
+            AppUtils.validatePageNumberAndSize(page, size);
 
+            Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+            Page<User> users = userRepository.searchUsers(keyword, pageable);
+
+            List<User> content = users.getNumberOfElements() == 0 ? Collections.emptyList() : users.getContent();
+
+            return new PagedResponse<>(content, users.getNumber(), users.getSize(), users.getTotalElements(),
+                    users.getTotalPages(), users.isLast());
+        } else {
+            throw new ForbiddenException("You don't have permission to access this resource.");
+        }
+    }
 
     @Override
     public PagedResponse<User> listUsers(int page, int size) {
@@ -197,6 +231,34 @@ public class UserServiceImpl implements IUserService {
                     users.getTotalPages(), users.isLast());
         } else {
             throw new ForbiddenException("You don't have permission to access this resource.");
+        }
+    }
+
+    public UserDetails loadUserByEmail(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return new org.springframework.security.core.userdetails.User(
+                    user.getEmail(),
+                    user.getPassword(),
+                    new ArrayList<>()
+            );
+        } else {
+            return null;
+        }
+    }
+
+    public UserDetails loadUserByUsername(String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return new org.springframework.security.core.userdetails.User(
+                    user.getUsername(),
+                    user.getPassword(),
+                    new ArrayList<>()
+            );
+        } else {
+            return null;
         }
     }
 
