@@ -1,12 +1,12 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/library
+    url: jdbc:mysql://root:CwWINiWvVwibSEPHpLJW@containers-us-west-181.railway.app:7479/railway
     username: root
-    password: 666666
+    password: CwWINiWvVwibSEPHpLJW
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:

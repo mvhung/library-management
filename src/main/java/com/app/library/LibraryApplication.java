@@ -50,5 +50,5 @@ public class LibraryApplication {
 //			System.out.println("Admin token: " + service.registerAdmin(admin2).getToken());
 //		};
 //	}
-//}
+
 }
