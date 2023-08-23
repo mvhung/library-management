@@ -2,7 +2,14 @@ package com.app.library.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.*;
+
+import com.app.library.payload.PagedResponse;
+import com.app.library.utils.AppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import com.app.library.dto.*;
@@ -53,6 +60,22 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
         List<UserBorrowing> users = new ArrayList<>(uniqueUsers);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
+
+
+
+    public PagedResponse<Loan> getAllLoans(int page, int size) {
+        AppUtils.validatePageNumberAndSize(page, size);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "updatedAt");
+
+        Page<Loan> loans = loanRepository.findAll(pageable);
+
+        List<Loan> content = loans.getNumberOfElements() == 0 ? Collections.emptyList() :loans.getContent();
+
+        return new PagedResponse<>(content, loans.getNumber(), loans.getSize(), loans.getTotalElements(),
+                loans.getTotalPages(), loans.isLast());
+    }
+
 
     @Override
     public ResponseEntity<?> listAllLoan() {

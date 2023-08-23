@@ -2,13 +2,14 @@ package com.app.library.controller;
 
 import com.app.library.dto.LoanDto;
 import com.app.library.model.*;
+import com.app.library.payload.PagedResponse;
 import com.app.library.service.impl.LoanServiceImpl;
-
-import java.util.List;
-
+import com.app.library.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/loans")
@@ -23,9 +24,11 @@ public class LoanController {
         return loanService.infoLoan(id);
     }
 
-    @GetMapping("/listUserBorrowing")
-    public ResponseEntity<?> listUserBorrowing() {
-        return loanService.listUserBorrowing();
+    @GetMapping
+    public PagedResponse<Loan> getAllLoans(
+            @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
+            @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
+        return loanService.getAllLoans(page, size);
     }
 
     @GetMapping("/listAllLoan")

@@ -21,7 +21,7 @@ public class LibraryApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(LibraryApplication.class, args);
-}
+	}
 
 
 //	@Bean
@@ -50,4 +50,5 @@ public class LibraryApplication {
 //			System.out.println("Admin token: " + service.registerAdmin(admin2).getToken());
 //		};
 //	}
+//}
 }

@@ -4,10 +4,12 @@ import com.app.library.auth.RegisterRequest;
 import com.app.library.dto.UserDto;
 import com.app.library.exception.object.*;
 import com.app.library.model.Category;
+import com.app.library.model.Loan;
 import com.app.library.model.Token;
 import com.app.library.model.User;
 import com.app.library.model.enum_class.RoleName;
 import com.app.library.payload.PagedResponse;
+import com.app.library.repository.LoanRepository;
 import com.app.library.repository.TokenRepository;
 import com.app.library.repository.UserRepository;
 import com.app.library.service.IUserService;
@@ -43,6 +45,9 @@ public class UserServiceImpl implements IUserService {
     private  PasswordEncoder passwordEncoder;
     @Autowired
     private TokenRepository tokenRepository;
+
+    @Autowired
+    private LoanRepository loanRepository;
 
     public ResponseEntity<User> updateUser(int id, RegisterRequest updateUserRequest) {
         Optional<String> currentUserLogin = SecurityUtil.getCurrentUserLogin();
@@ -232,6 +237,35 @@ public class UserServiceImpl implements IUserService {
         } else {
             throw new ForbiddenException("You don't have permission to access this resource.");
         }
+    }
+
+
+
+    public PagedResponse<Loan> getLoansByUserId(int userId, int page, int size) {
+        AppUtils.validatePageNumberAndSize(page, size);
+
+        Optional<String> currentUserLogin = SecurityUtil.getCurrentUserLogin();
+
+        if (!currentUserLogin.isPresent()) {
+            throw new ForbiddenException("User unauthorized");
+        }
+
+        User currentUser = userRepository.findByEmail(currentUserLogin.get())
+                .orElseThrow(() -> new UserNotFoundException("No find user"));
+
+        if (!currentUserLogin.get().equals(currentUser.getEmail()) &&
+                !SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
+            throw new ForbiddenException("You don't have permission to access this resource.");
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+        Page<Loan> loans = loanRepository.findByUserId(userId, pageable);
+
+        List<Loan> content = loans.getNumberOfElements() == 0 ? Collections.emptyList() : loans.getContent();
+
+        return new PagedResponse<>(content, loans.getNumber(), loans.getSize(), loans.getTotalElements(),
+                loans.getTotalPages(), loans.isLast());
     }
 
     public UserDetails loadUserByEmail(String email) {
