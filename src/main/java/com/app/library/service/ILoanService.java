@@ -16,4 +16,6 @@ public interface ILoanService {
 
     public ResponseEntity <?> listUserBorrowing();
 
+    public ResponseEntity<?> listAllLoan();
+
 }

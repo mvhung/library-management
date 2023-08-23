@@ -55,6 +55,15 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
     }
 
     @Override
+    public ResponseEntity<?> listAllLoan() {
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
+            List<Loan> loans = loanRepository.findAll();
+            return new ResponseEntity<>(loans, HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Access denied", HttpStatus.FORBIDDEN);
+    }
+
+    @Override
     public ResponseEntity<?> deleteLoan(int Id) {
         if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
             // Delete by Id User
@@ -131,6 +140,7 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
     @Override
     public ResponseEntity<?> newLoan(List<LoanDto> newLoanDtos) {
         if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
+            
             List<Loan> loans = new ArrayList<Loan>();
             for (LoanDto newLoanDto : newLoanDtos) {
                 boolean flag = false;
@@ -165,7 +175,7 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
                     for (BookDto bookDto : newLoanDto.getBooks()) {
                         Loan loan = new Loan();
                         loan.setUserId(newLoanDto.getUser().getUserId());
-                        
+
                         if (bookDto.getDayLoan() != 0) {
                             loan.setLoanDueDate(LocalDateTime.now().plusDays(bookDto.getDayLoan()));
                         } else {

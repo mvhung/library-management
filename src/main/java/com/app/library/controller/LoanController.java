@@ -28,6 +28,11 @@ public class LoanController {
         return loanService.listUserBorrowing();
     }
 
+    @GetMapping("/listAllLoan")
+    public ResponseEntity<?> listAllLoan() {
+        return loanService.listAllLoan();
+    }
+    
     @DeleteMapping(value = "/del/{id}")
     public ResponseEntity<?> deleteLoan(@PathVariable("id") int id) {
         return loanService.deleteLoan(id);
