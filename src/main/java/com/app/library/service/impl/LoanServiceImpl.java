@@ -13,6 +13,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import com.app.library.dto.*;
+import com.app.library.exception.object.ForbiddenException;
+import com.app.library.exception.object.UserNotFoundException;
 import com.app.library.model.*;
 import com.app.library.repository.*;
 import com.app.library.utils.SecurityUtil;
@@ -61,8 +63,6 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-
-
     public PagedResponse<Loan> getAllLoans(int page, int size) {
         AppUtils.validatePageNumberAndSize(page, size);
 
@@ -70,12 +70,11 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
 
         Page<Loan> loans = loanRepository.findAll(pageable);
 
-        List<Loan> content = loans.getNumberOfElements() == 0 ? Collections.emptyList() :loans.getContent();
+        List<Loan> content = loans.getNumberOfElements() == 0 ? Collections.emptyList() : loans.getContent();
 
         return new PagedResponse<>(content, loans.getNumber(), loans.getSize(), loans.getTotalElements(),
                 loans.getTotalPages(), loans.isLast());
     }
-
 
     @Override
     public ResponseEntity<?> listAllLoan() {
@@ -163,7 +162,7 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
     @Override
     public ResponseEntity<?> newLoan(List<LoanDto> newLoanDtos) {
         if (SecurityUtil.hasCurrentUserAnyOfAuthorities("ADMIN_PERMISSION")) {
-            
+
             List<Loan> loans = new ArrayList<Loan>();
             for (LoanDto newLoanDto : newLoanDtos) {
                 boolean flag = false;
@@ -204,7 +203,7 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
                         } else {
                             loan.setLoanDueDate(LocalDateTime.now().plusDays(14));
                         }
-                    
+
                         loan.setBookTitle(bookRepository.findById(bookDto.getBookId()).get().getBookTitle());
                         loan.setUserName(userRepository.findById(newLoanDto.getUser().getUserId()).get().getUsername());
                         loan.setUserAddress(
@@ -224,7 +223,76 @@ public class LoanServiceImpl implements com.app.library.service.ILoanService {
             // Lưu loans vào cơ sở dữ liệu
             loanRepository.saveAll(loans);
             return new ResponseEntity<>(loans, HttpStatus.OK);
+        } 
+
+        if (SecurityUtil.hasCurrentUserAnyOfAuthorities("USER_PERMISSION")) {
+            // Chi cho muon theo chinh id nguoi dung
+            Optional<String> currentUserLogin = SecurityUtil.getCurrentUserLogin();
+
+            if (!currentUserLogin.isPresent()) {
+                throw new ForbiddenException("User unauthorized");
+            }
+
+            Optional<User> userOptional = userRepository.findByEmail(currentUserLogin.get());
+            if (!userOptional.isPresent()) {
+                throw new UserNotFoundException("No find user");
+            }
+
+            List<Loan> loans = new ArrayList<Loan>();
+            LoanDto newLoanDtoUser = new LoanDto();
+            User user = userOptional.get();
+            for (LoanDto newLoanDto : newLoanDtos) {
+                if (newLoanDto.getUser().getUserId() == user.getUserId()) {
+                    newLoanDtoUser = newLoanDto;
+                }
+            }
+
+            boolean flag = false;
+            for (BookDto bookDto : newLoanDtoUser.getBooks()) {
+                Book newBook = bookRepository.findById(bookDto.getBookId())
+                        .orElseThrow(() -> new RuntimeException("Cannot find book with id: " + bookDto.getBookId()));
+                if (bookDto.getBookQuantity() > newBook.getBookQuantity()) {
+                    throw new RuntimeException("Cannot loan book with id: " + bookDto.getBookId());
+                } else {
+                    flag = true;
+                }
+                newBook.setBookQuantity(newBook.getBookQuantity() - bookDto.getBookQuantity());
+                bookRepository.save(newBook);
+            }
+
+            if (flag == false) {
+                throw new RuntimeException("Cannot loan book");
+
+            } else {
+                // Add user and books to loan
+                for (BookDto bookDto : newLoanDtoUser.getBooks()) {
+                    Loan loan = new Loan();
+                    loan.setUserId(newLoanDtoUser.getUser().getUserId());
+
+                    if (bookDto.getDayLoan() != 0) {
+                        loan.setLoanDueDate(LocalDateTime.now().plusDays(bookDto.getDayLoan()));
+                    } else {
+                        loan.setLoanDueDate(LocalDateTime.now().plusDays(14));
+                    }
+
+                    loan.setBookTitle(bookRepository.findById(bookDto.getBookId()).get().getBookTitle());
+                    loan.setUserName(userRepository.findById(newLoanDtoUser.getUser().getUserId()).get().getUsername());
+                    loan.setUserAddress(
+                            userRepository.findById(newLoanDtoUser.getUser().getUserId()).get().getAddress());
+                    loan.setCreatedAt(LocalDateTime.now());
+                    loan.setCreatedBy(SecurityUtil.currentUser().get().getUsername());
+                    loan.setBookId(bookDto.getBookId());
+                    loan.setBookQuantity(bookDto.getBookQuantity());
+                    loan.setBookImageLink(
+                            bookRepository.findById(bookDto.getBookId()).get().getBookImageLink());
+                    loans.add(loan);
+                }
+            }
+
+            flag = false;
+            loanRepository.saveAll(loans);
+            return new ResponseEntity<>(loans, HttpStatus.OK);
         }
-        return new ResponseEntity<>("Access denied", HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>("Not Found", HttpStatus.NOT_FOUND);
     }
 }
