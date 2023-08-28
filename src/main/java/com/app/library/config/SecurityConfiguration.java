@@ -74,7 +74,7 @@ public class SecurityConfiguration {
         config.setAllowCredentials(true);
         config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE"));
-        config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+        config.setAllowedOrigins(Collections.singletonList("https://library-management.up.railway.app"));
         source.registerCorsConfiguration("/**", config);
         return source;
     }
