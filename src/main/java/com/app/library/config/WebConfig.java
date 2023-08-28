@@ -16,6 +16,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedMethods("*") // Allow all HTTP methods
                 .allowedHeaders("*")
-                .allowedOrigins("http://localhost:3000");
+                .allowedOrigins("library-management.up.railway.app");
     }
 }
